@@ -1624,7 +1624,9 @@ button, select { font: inherit; color: inherit; }
   let L = null, pages = [];
   let p = 0, target = 0, vel = 0, running = false, lastT = 0, shownIdx = -2, shownPos = '';
   let pv = 0, lastP = 0;
-  let springK = 90;
+  // How firmly the rack pulls toward where it should be: higher settles faster.
+  const BASE_K = 170, WHEEL_K = 320;
+  let springK = BASE_K;
   let drag = null, dragging = false, suppressClick = false, wheelTimer = 0, lastNotch = 0;
 
   // ---------- Filters ----------
@@ -1959,8 +1961,9 @@ button, select { font: inherit; color: inherit; }
       if (isBack !== pg.back) { pg.el.classList.toggle('is-back', isBack); pg.back = isBack; }
       const deep = a > 45;
       if (deep !== pg.deep) { pg.el.classList.toggle('is-deep', deep); pg.deep = deep; }
-      const shade = 0.6 + 0.4 * (1 + cosT) / 2;
-      if (Math.abs(shade - pg.shade) > 0.004) { pg.el.style.setProperty('--shade', shade.toFixed(3)); pg.shade = shade; }
+      // Shading changes in small steps: each change repaints the photo, so this keeps turning smooth.
+      const shade = Math.round((0.6 + 0.4 * (1 + cosT) / 2) * 50) / 50;
+      if (shade !== pg.shade) { pg.el.style.setProperty('--shade', shade.toFixed(3)); pg.shade = shade; }
       if (dt > 0) {
         pg.swayV += ((swayTarget - pg.sway) * 55 - pg.swayV * 6.5) * dt;
         pg.sway += pg.swayV * dt;
@@ -2023,7 +2026,7 @@ button, select { font: inherit; color: inherit; }
     requestAnimationFrame(tick);
   }
   function goTo(t) {
-    springK = 90;
+    springK = BASE_K;
     target = clamp(snapQ(t), 0, N);
     kick();
   }
@@ -2080,7 +2083,7 @@ button, select { font: inherit; color: inherit; }
       target = clamp(t, 0, N);
       vel = v;
       // Long throws glide on a softer spring so you can watch the rack spin past.
-      springK = L.narrow ? clamp(90 / Math.sqrt(1 + Math.abs(target - p) / 3), 14, 90) : 90;
+      springK = L.narrow ? clamp(BASE_K / Math.sqrt(1 + Math.abs(target - p) / 3), 40, BASE_K) : BASE_K;
       suppressClick = true;
       setTimeout(() => { suppressClick = false; }, 60);
     }
@@ -2117,15 +2120,19 @@ button, select { font: inherit; color: inherit; }
     if (!horiz && ((d > 0 && at >= N) || (d < 0 && at <= 0))) return;
     e.preventDefault();
     const px = e.deltaMode === 1 ? d * 32 : e.deltaMode === 2 ? d * L.sw : d;
+    // Mouse wheel: every notch moves one piece, so spinning the wheel runs along the rack.
+    // (Some mice send two events per notch; ignore the twin.)
     if (e.deltaMode !== 0 || Math.abs(px) >= 50) {
       const now = performance.now();
-      if (now - lastNotch > 300) { lastNotch = now; step(Math.sign(px)); }
+      if (now - lastNotch > 35) { lastNotch = now; step(Math.sign(px)); }
       return;
     }
+    // Trackpad: the rack follows your fingers closely, then settles on the nearest piece.
     target = clamp(target + px / (L.dragPx * 1.1), -0.08, N + 0.08);
+    springK = WHEEL_K;
     kick();
     clearTimeout(wheelTimer);
-    wheelTimer = setTimeout(() => goTo(target), 140);
+    wheelTimer = setTimeout(() => goTo(target), 110);
   }, { passive: false });
 
   stage.addEventListener('keydown', e => {
