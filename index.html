@@ -1887,7 +1887,7 @@ button, select { font: inherit; color: inherit; }
         imgs[1].src = it.photo.back;
       }
       frag.appendChild(a);
-      return { el: a, leaf: a.firstElementChild, idx: i, ang: 0, sway: 0, swayV: 0, back: null, shown: true, shade: 1, z: '' };
+      return { el: a, leaf: a.firstElementChild, idx: i, ang: 0, sway: 0, swayV: 0, back: null, shown: true, shade: 1, fade: 1, z: '' };
     });
     pagesEl.appendChild(frag);
     render(0);
@@ -1919,6 +1919,13 @@ button, select { font: inherit; color: inherit; }
     if (!it.photo) chip('Photos on listing');
   }
 
+  // 0 at e0, 1 at e1, eased in between (works either way round).
+  function smooth(e0, e1, x) {
+    if (e0 === e1) return x < e0 ? 0 : 1;
+    const t = clamp((x - e0) / (e1 - e0), 0, 1);
+    return t * t * (3 - 2 * t);
+  }
+
   function render(dt) {
     let swaying = false;
     const swayTarget = reduced ? 0 : clamp(-pv * 3.2, -8, 8);
@@ -1928,12 +1935,20 @@ button, select { font: inherit; color: inherit; }
       const a = Math.abs(s.theta);
       // Only as many pieces as the ring has hooks: the last hook at the back stays empty, so pieces
       // coming round from either side never land on the same spot.
-      const onRing = Math.abs(s.theta) < (L.slots / 2 - 0.5) * L.step;
+      const lim = (L.slots / 2 - 0.5) * L.step;
+      const onRing = a < lim;
       if (!onRing) {
         if (pg.shown) { pg.el.style.opacity = '0'; pg.el.style.visibility = 'hidden'; pg.shown = false; }
         continue;
       }
       if (!pg.shown) { pg.el.style.visibility = ''; pg.el.style.opacity = ''; pg.shown = true; }
+      // Pieces going round the back thin out gradually and melt into the wall before they leave the ring,
+      // and fade back in the same way as they come round, instead of popping in and out at the last hook.
+      const span = Math.min(1.75 * L.step, lim * 0.45);
+      const haze = 1 - 0.3 * smooth(90, lim - span, a);
+      const edge = smooth(lim, lim - span, a);
+      const fade = Math.round(haze * edge * 1000) / 1000;
+      if (fade !== pg.fade) { pg.leaf.style.opacity = fade >= 1 ? '' : String(fade); pg.fade = fade; }
       pg.el.style.transform = ringTransform(s);
       const cosT = Math.cos(s.theta * Math.PI / 180);
       // Front half hangs in front of the ring's front bar; back half behind it.
