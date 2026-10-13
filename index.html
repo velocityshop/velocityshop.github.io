@@ -1626,6 +1626,8 @@ button, select { font: inherit; color: inherit; }
   let pv = 0, lastP = 0;
   // How firmly the rack pulls toward where it should be: higher settles faster.
   const BASE_K = 170, WHEEL_K = 320;
+  // Share of the finger's movement that turns the rack on phones (1 = rack follows the finger exactly).
+  const PHONE_SPEED = 0.15;
   let springK = BASE_K;
   let drag = null, dragging = false, suppressClick = false, wheelTimer = 0, lastNotch = 0;
 
@@ -1718,8 +1720,8 @@ button, select { font: inherit; color: inherit; }
       P: Math.max(W * 2.2, R * 3.2),
       oy: hangerTop + hook + H * 0.35,
       railY: frontY,
-      // Finger travel per piece. Phones turn the rack at 30% of the finger's speed so swipes are easier to control.
-      dragPx: R * step * Math.PI / 180 * (narrow ? 1 / 0.3 : 1),
+      // Finger travel per piece. Phones turn the rack at 15% of the finger's speed so swipes are easier to control.
+      dragPx: R * step * Math.PI / 180 * (narrow ? 1 / PHONE_SPEED : 1),
       tw: clamp(W * 0.15, 42, 76),
       disc: narrow ? 36 : 48
     };
@@ -2076,12 +2078,14 @@ button, select { font: inherit; color: inherit; }
       const s = drag.samples, a = s[0], b = s[s.length - 1];
       const span = (b[0] - a[0]) / 1000;
       // Phones: a flick carries momentum, and a fast one can run the whole rack.
-      // (On phones v is already cut to 30% by the slower drag; the throw is tuned so a flick carries 30% as far as it used to.)
-      const v = clamp(span > 0 ? (b[1] - a[1]) / span : 0, L.narrow ? -27 : -14, L.narrow ? 27 : 14);
-      const throwBy = L.narrow ? Math.sign(v) * (Math.abs(v) * 0.4 + v * v * 1.83) : v * 0.3 / stops();
+      // (On phones v is already cut to PHONE_SPEED by the slower drag; the throw is tuned so a flick carries that share of its old distance.)
+      const v = clamp(span > 0 ? (b[1] - a[1]) / span : 0, L.narrow ? -90 * PHONE_SPEED : -14, L.narrow ? 90 * PHONE_SPEED : 14);
+      const throwBy = L.narrow ? Math.sign(v) * (Math.abs(v) * 0.4 + v * v * 0.55 / PHONE_SPEED) : v * 0.3 / stops();
       let t = snapQ(p + throwBy);
-      if (v > 0.6) t = Math.max(t, ceilQ(p - 0.001));
-      else if (v < -0.6) t = Math.min(t, floorQ(p + 0.001));
+      // A deliberate swipe always moves on at least one stop (threshold scaled to the phone's slower drag).
+      const flickV = L.narrow ? 0.6 * PHONE_SPEED : 0.6;
+      if (v > flickV) t = Math.max(t, ceilQ(p - 0.001));
+      else if (v < -flickV) t = Math.min(t, floorQ(p + 0.001));
       target = clamp(t, 0, N);
       vel = v;
       // Long throws glide on a softer spring so you can watch the rack spin past.
