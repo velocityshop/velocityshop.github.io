@@ -1938,21 +1938,22 @@ button, select { font: inherit; color: inherit; }
       const v = pg.idx - p;
       const s = ringSlot(v);
       const a = Math.abs(s.theta);
-      // Only as many pieces as the ring has hooks: the last hook at the back stays empty, so pieces
-      // coming round from either side never land on the same spot.
-      const lim = (L.slots / 2 - 0.5) * L.step;
-      const onRing = a < lim;
+      // Pieces join the ring at its right-most point, swing round to the front, out to the left, all the way
+      // round the back, and leave as they come back round to the right-most point. One hook there stays empty
+      // so the piece leaving never lands on the piece arriving.
+      const enterAt = 90 + L.step / 2;
+      const leaveAt = enterAt - (L.slots - 1) * L.step;
+      const onRing = s.theta < enterAt && s.theta > leaveAt;
       if (!onRing) {
         if (pg.shown) { pg.el.style.opacity = '0'; pg.el.style.visibility = 'hidden'; pg.shown = false; }
         continue;
       }
       if (!pg.shown) { pg.el.style.visibility = ''; pg.el.style.opacity = ''; pg.shown = true; }
-      // Pieces going round the back thin out gradually and melt into the wall before they leave the ring,
-      // and fade back in the same way as they come round, instead of popping in and out at the last hook.
-      const span = Math.min(1.75 * L.step, lim * 0.45);
-      const haze = 1 - 0.3 * smooth(90, lim - span, a);
-      const edge = smooth(lim, lim - span, a);
-      const fade = Math.round(haze * edge * 1000) / 1000;
+      // A new piece eases in side-on at the right edge; a leaving piece fades out at the back-right,
+      // just before it reaches that same edge.
+      const fadeIn = smooth(enterAt, enterAt - 1.1 * L.step, s.theta);
+      const fadeOut = smooth(leaveAt, leaveAt + 1.1 * L.step, s.theta);
+      const fade = Math.round(fadeIn * fadeOut * 1000) / 1000;
       if (fade !== pg.fade) { pg.leaf.style.opacity = fade >= 1 ? '' : String(fade); pg.fade = fade; }
       pg.el.style.transform = ringTransform(s);
       const cosT = Math.cos(s.theta * Math.PI / 180);
