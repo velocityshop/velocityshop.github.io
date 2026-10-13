@@ -1700,7 +1700,7 @@ button, select { font: inherit; color: inherit; }
     const R = narrow ? sw * 1.15 : clamp(sw * 0.38, 300, 720);
     const step = narrow ? 36 : 30;
     const ry = R * (narrow ? 0.05 : 0.08);
-    const flipShift = narrow ? 8 : 0; // phones: how far either side of centre (degrees) a piece rests front and back
+    const flipShift = 8; // how far either side of centre (degrees) a piece rests front and back
     // Phones: the piece at the front fills most of the width, with a slice of each neighbour at the edges.
     const targetH = clamp(vh * (narrow ? 0.66 : 0.66), 300, 820);
     const kH = (targetH - railTop - 2 * ry - hook - bottom) / maxCH;
@@ -1728,25 +1728,16 @@ button, select { font: inherit; color: inherit; }
 
   // Where a piece hangs on the ring, from its offset v (0 = the piece you're on).
   // theta is how far round the ring it sits: 0 = front centre, +/-90 = the sides, 180 = the back.
-  // The piece you're on rests half a hook right of centre, facing you; the one before it rests half a hook left,
-  // showing its back. Crossing the middle, a piece turns over, so the right side shows fronts and the left side backs.
+  // Each piece has two stops. It rests just right of centre facing you, then the next step turns
+  // it over just left of centre to show its back; the step after that swings it off left as the next piece arrives.
+  // The ring turns a little during the flip and the rest of the way between pieces, so the spacing stays the same.
   function ringSlot(v) {
-    let theta, rot;
-    if (L.narrow) {
-      // Phones: each piece has two stops. It rests just right of centre facing you, then the next step turns
-      // it over just left of centre to show its back; the step after that swings it off left as the next piece arrives.
-      // The ring turns a little during the flip and the rest of the way between pieces, so the spacing stays the same.
-      const d = L.flipShift, cyc = L.step;
-      const k = Math.floor(p), f = p - k;
-      const T = k * cyc + (f <= 0.5 ? (f / 0.5) * 2 * d : 2 * d + ((f - 0.5) / 0.5) * (cyc - 2 * d));
-      theta = d + (p + v) * cyc - T;
-      const q = -v; // how far along this piece's own cycle we are
-      rot = q <= 0 ? theta : q >= 0.5 ? 180 + theta : theta + 180 * (q / 0.5);
-    } else {
-      const half = L.step / 2;
-      theta = (v + 0.5) * L.step;
-      rot = theta >= half ? theta - half : theta <= -half ? 180 + theta + half : 90 * (1 - theta / half);
-    }
+    const d = L.flipShift, cyc = L.step;
+    const k = Math.floor(p), f = p - k;
+    const T = k * cyc + (f <= 0.5 ? (f / 0.5) * 2 * d : 2 * d + ((f - 0.5) / 0.5) * (cyc - 2 * d));
+    const theta = d + (p + v) * cyc - T;
+    const q = -v; // how far along this piece's own cycle we are
+    let rot = q <= 0 ? theta : q >= 0.5 ? 180 + theta : theta + 180 * (q / 0.5);
     rot = ((rot + 180) % 360 + 360) % 360 - 180;
     const t = theta * Math.PI / 180;
     const x = L.R * Math.sin(t), z = L.R * (Math.cos(t) - 1);
@@ -1760,12 +1751,12 @@ button, select { font: inherit; color: inherit; }
     return 'translate(' + (s.sx - L.c).toFixed(2) + 'px,' + (s.sy - L.frontY).toFixed(2) + 'px) scale(' + s.s.toFixed(4) + ') perspective(' + Math.round(L.W * 3) + 'px) rotateY(' + s.rot.toFixed(2) + 'deg)';
   }
   // Where the rack can come to rest: every piece on desktop; front and back of every piece on phones.
-  const stops = () => (L && L.narrow ? 2 : 1);
+  const stops = () => 2;
   const snapQ = x => Math.round(x * stops()) / stops();
   const ceilQ = x => Math.ceil(x * stops()) / stops();
   const floorQ = x => Math.floor(x * stops()) / stops();
   // On phones the piece stays the one you're on while it shows its back.
-  const curIdx = () => (L && L.narrow ? Math.floor(wrapP() + 0.25) : Math.round(wrapP()));
+  const curIdx = () => Math.floor(wrapP() + 0.25);
 
   // The ring itself: back half behind every piece, front half in front of the pieces at the back.
   function drawRing() {
@@ -1937,7 +1928,7 @@ button, select { font: inherit; color: inherit; }
       // Round the loop: a piece can sit ahead of you or behind you; use whichever lands on the visible ring.
       let v = pg.idx - p;
       v -= Math.floor(v / loopLen()) * loopLen();
-      if (ringSlot(v).theta >= 90 + L.step / 2) v -= loopLen();
+      if (ringSlot(v).theta >= (L.narrow ? 90 + L.step / 2 : 90 + L.flipShift)) v -= loopLen();
       const s = ringSlot(v);
       const a = Math.abs(s.theta);
       // Pieces join the ring at its right-most point, swing round to the front, out to the left, all the way
@@ -1945,10 +1936,11 @@ button, select { font: inherit; color: inherit; }
       // so the piece leaving never lands on the piece arriving.
       // Phones: the ring's right side is off the screen, so pieces simply carry on round until they are
       // out of view and vanish there, with no fading.
-      const enterAt = 90 + L.step / 2;
+      const enterAt = L.narrow ? 90 + L.step / 2 : 90 + L.flipShift;
       // Computers: the leaving piece comes all the way back to the right-most hook and hands over there: as the
       // rack turns it fades out while the next piece fades in on that same hook, so no hook is ever left empty.
-      const leaveAt = L.narrow ? enterAt - 360 + L.step * 0.1 : enterAt - 360 - L.step;
+      const swap = 2 * L.flipShift;
+      const leaveAt = L.narrow ? enterAt - 360 + L.step * 0.1 : enterAt - 360 - swap;
       let onRing = s.theta < enterAt && s.theta > leaveAt;
       if (onRing && L.narrow) {
         const half = L.W * s.s * 0.8;
@@ -1960,15 +1952,16 @@ button, select { font: inherit; color: inherit; }
       }
       if (!pg.shown) { pg.el.style.visibility = ''; pg.el.style.opacity = ''; pg.shown = true; }
       // A new piece eases in side-on at the right edge, on the same hook the leaving piece fades out from.
-      const fadeIn = smooth(enterAt, enterAt - L.step, s.theta);
-      const fadeOut = smooth(leaveAt, leaveAt + L.step, s.theta);
+      // The hand-over happens while the piece at the front turns over, so at every stop each hook shows one whole piece.
+      const fadeIn = smooth(enterAt, enterAt - swap, s.theta);
+      const fadeOut = smooth(leaveAt, leaveAt + swap, s.theta);
       const fade = L.narrow ? 1 : Math.round(fadeIn * fadeOut * 1000) / 1000;
       if (fade !== pg.fade) { pg.leaf.style.opacity = fade >= 1 ? '' : String(fade); pg.fade = fade; }
       pg.el.style.transform = ringTransform(s);
       const cosT = Math.cos(s.theta * Math.PI / 180);
       // Front half hangs in front of the ring's front bar; back half behind it.
       // Where pieces overlap at the front, the left side (backs) always sits on top of the right side (fronts).
-      const z = String(cosT >= 0 ? 160 + Math.round(cosT * 100) + (s.theta < 0 && !L.narrow ? 120 : 0) : 2 + Math.round((cosT + 1) * 100));
+      const z = String(cosT >= 0 ? 160 + Math.round(cosT * 100) : 2 + Math.round((cosT + 1) * 100));
       if (z !== pg.z) { pg.el.style.zIndex = z; pg.z = z; }
       const isBack = Math.abs(s.rot) > 90;
       if (isBack !== pg.back) { pg.el.classList.toggle('is-back', isBack); pg.back = isBack; }
@@ -1988,7 +1981,7 @@ button, select { font: inherit; color: inherit; }
     // The opening sign hangs on the left until you start turning, then slides away and fades.
     // When nothing matches the filters it moves to the centre on its own.
     // Phones stop halfway through each piece (front, then back), so the sign is fully gone by the first stop.
-    const coverRate = L.narrow ? 2.5 : 1.25;
+    const coverRate = 2.5;
     const pc = wrapP();
     const coverOp = N ? clamp(1 - Math.abs(pc) * coverRate, 0, 1) : 1;
     cover.style.transform = N ? 'translateX(' + (-Math.max(pc, 0) * 32 * coverRate).toFixed(1) + 'px)' : 'translateX(' + cover.dataset.centerShift + 'px)';
@@ -2002,7 +1995,7 @@ button, select { font: inherit; color: inherit; }
     endSign.style.opacity = String(endOp);
     endSign.style.visibility = endOp < 0.05 ? 'hidden' : '';
     // The label shows the piece on the left (showing its back); before the first turn there isn't one, so it shows the first piece.
-    const r = N ? clamp(L.narrow ? curIdx() : Math.round(wrapP()) - 1, 0, N - 1) : -1;
+    const r = N ? clamp(curIdx(), 0, N - 1) : -1;
     if (r !== shownIdx) setNow(r);
     const at = N ? r + 1 : 0;
     const pos = at + '/' + N, posKey = pos + '|' + Math.round(p);
@@ -2010,7 +2003,7 @@ button, select { font: inherit; color: inherit; }
       shownPos = posKey;
       dividerText.textContent = pos;
       posEl.textContent = at + ' of ' + N;
-      if (!scrub.matches(':active')) scrub.value = String(clamp(L.narrow ? curIdx() : Math.round(wrapP()), 0, N));
+      if (!scrub.matches(':active')) scrub.value = String(clamp(curIdx(), 0, N));
     }
     prevBtn.disabled = target <= 0.001;
     nextBtn.disabled = !N;
@@ -2206,7 +2199,7 @@ button, select { font: inherit; color: inherit; }
     return view.findIndex(it => pieceKey(it) === key);
   }
   // On phones the piece you're on faces you at its own position; on computers it is the one just left of centre.
-  const posOf = i => (L && L.narrow ? i : i + 1);
+  const posOf = i => i;
   function openFromAddress(animate) {
     const i = pieceFromAddress();
     if (i < 0) return;
