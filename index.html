@@ -304,6 +304,10 @@ button, select { font: inherit; color: inherit; }
 .ctl[disabled] { opacity: .35; cursor: default; }
 .ctl svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
 .scrub { flex: 1 1 auto; min-width: 0; width: 100%; accent-color: var(--accent); height: 28px; cursor: pointer; }
+.ctl.share { display: inline-flex; gap: 6px; font-weight: 700; }
+.ctl.share svg { width: 15px; height: 15px; }
+.share-note { flex-basis: 100%; display: grid; gap: 6px; font: 600 12px/1.3 var(--f-body); color: var(--muted); }
+.share-note input { width: 100%; min-width: 0; font: 13px/1.2 var(--f-tag); color: var(--ink); padding: 9px 10px; border: 1.5px solid var(--ink); border-radius: 6px; background: var(--field); }
 .pos { font: 700 12px/1 var(--f-tag); color: var(--muted); min-width: 7ch; text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .hint { margin: 0; color: var(--muted); font-size: 13px; padding-block: 6px 22px; max-width: 86ch; }
 
@@ -440,6 +444,11 @@ button, select { font: inherit; color: inherit; }
         <input class="scrub" id="scrub" type="range" min="0" max="1" step="1" value="0" aria-label="Move along the rack">
         <button class="ctl" id="next" type="button" aria-label="Next piece"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m6 3 5 5-5 5"/></svg></button>
         <span class="pos" id="pos" aria-hidden="true"></span>
+        <button class="ctl share" id="share" type="button" aria-label="Share a link to this piece"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 10V2M5 5l3-3 3 3M3 9v4.5h10V9"/></svg><span id="share-label">Share</span></button>
+      </div>
+      <div class="share-note" id="share-note" hidden>
+        <label for="share-url">Copy this link to share the piece</label>
+        <input id="share-url" type="text" readonly>
       </div>
     </div>
     <p class="hint wrap">Swipe, drag or scroll on the rack to turn it, or slide the bar to move fast. On a phone, tap the right or left side of the rack to turn it, and use View piece to shop the starred piece. On a computer, click any piece to shop it. Pieces marked See photos are drawn stand-ins; tap them to see the real photos on the listing.</p>
@@ -1049,11 +1058,11 @@ button, select { font: inherit; color: inherit; }
    "added": "2026-10-12"
   },
   {
-   "id": "local-rockrev",
-   "name": "Rock Revival Jeans Black Wash",
-   "size": "",
-   "price": "",
-   "link": "https://velocity-shop.square.site/s/shop",
+   "id": "CX3NSMUXSLZKQWWXM75JDMWJ",
+   "name": "Abercrombie & Fitch Mens Jeans Gray Faded Wash Grey Denim 32x30 A&F",
+   "size": "32×30",
+   "price": "32",
+   "link": "https://velocity-shop.square.site/product/abercrombie-fitch-mens-jeans-gray-faded-wash-grey-denim-32x30-a-f/CX3NSMUXSLZKQWWXM75JDMWJ",
    "cat": "bottoms",
    "kind": "jeans",
    "color": "#1F2023",
@@ -1257,20 +1266,6 @@ button, select { font: inherit; color: inherit; }
    "pattern": "",
    "photo": "",
    "added": "2026-10-11"
-  },
-  {
-   "id": "CX3NSMUXSLZKQWWXM75JDMWJ",
-   "name": "Abercrombie & Fitch Mens Jeans Gray Faded Wash Grey Denim 32x30 A&F",
-   "size": "32×30",
-   "price": "32",
-   "link": "https://velocity-shop.square.site/product/abercrombie-fitch-mens-jeans-gray-faded-wash-grey-denim-32x30-a-f/CX3NSMUXSLZKQWWXM75JDMWJ",
-   "cat": "bottoms",
-   "kind": "jeans",
-   "color": "#85898E",
-   "accent": "",
-   "pattern": "",
-   "photo": "",
-   "added": "2026-10-08"
   },
   {
    "id": "UTPDCCQZ6OP2BLJGCQCXX7NL",
@@ -1630,6 +1625,10 @@ button, select { font: inherit; color: inherit; }
   const PHONE_SPEED = 0.15;
   let springK = BASE_K;
   let drag = null, dragging = false, suppressClick = false, wheelTimer = 0, lastNotch = 0;
+  // The rack is a loop: positions run 0..N (N is the end sign), and one more step forward (N + 1) is the start again.
+  const loopLen = () => N + 1;
+  // Where we are, counted from the start: just past the end sign reads as just before the start.
+  const wrapP = () => (p > N + 0.5 ? p - loopLen() : p);
 
   // ---------- Filters ----------
   function renderChips() {
@@ -1766,7 +1765,7 @@ button, select { font: inherit; color: inherit; }
   const ceilQ = x => Math.ceil(x * stops()) / stops();
   const floorQ = x => Math.floor(x * stops()) / stops();
   // On phones the piece stays the one you're on while it shows its back.
-  const curIdx = () => (L && L.narrow ? Math.floor(p + 0.25) : Math.round(p));
+  const curIdx = () => (L && L.narrow ? Math.floor(wrapP() + 0.25) : Math.round(wrapP()));
 
   // The ring itself: back half behind every piece, front half in front of the pieces at the back.
   function drawRing() {
@@ -1935,7 +1934,10 @@ button, select { font: inherit; color: inherit; }
     let swaying = false;
     const swayTarget = reduced ? 0 : clamp(-pv * 3.2, -8, 8);
     for (const pg of pages) {
-      const v = pg.idx - p;
+      // Round the loop: a piece can sit ahead of you or behind you; use whichever lands on the visible ring.
+      let v = pg.idx - p;
+      v -= Math.floor(v / loopLen()) * loopLen();
+      if (ringSlot(v).theta >= 90 + L.step / 2) v -= loopLen();
       const s = ringSlot(v);
       const a = Math.abs(s.theta);
       // Pieces join the ring at its right-most point, swing round to the front, out to the left, all the way
@@ -1986,19 +1988,20 @@ button, select { font: inherit; color: inherit; }
     // When nothing matches the filters it moves to the centre on its own.
     // Phones stop halfway through each piece (front, then back), so the sign is fully gone by the first stop.
     const coverRate = L.narrow ? 2.5 : 1.25;
-    const coverOp = N ? clamp(1 - p * coverRate, 0, 1) : 1;
-    cover.style.transform = N ? 'translateX(' + (-Math.max(p, 0) * 32 * coverRate).toFixed(1) + 'px)' : 'translateX(' + cover.dataset.centerShift + 'px)';
+    const pc = wrapP();
+    const coverOp = N ? clamp(1 - Math.abs(pc) * coverRate, 0, 1) : 1;
+    cover.style.transform = N ? 'translateX(' + (-Math.max(pc, 0) * 32 * coverRate).toFixed(1) + 'px)' : 'translateX(' + cover.dataset.centerShift + 'px)';
     cover.style.zIndex = '450';
     cover.style.opacity = String(coverOp);
     cover.style.visibility = coverOp < 0.05 ? 'hidden' : '';
     // The end sign fades in over everything, centred, as you reach the end of the rack.
-    const endOp = N ? clamp(1 - (N - p) * 1.5, 0, 1) : 0;
+    const endOp = N ? clamp(1 - Math.abs(N - p) * 1.5, 0, 1) : 0;
     endSign.style.transform = 'translateY(' + ((1 - endOp) * 12).toFixed(1) + 'px)';
     endSign.style.zIndex = '500';
     endSign.style.opacity = String(endOp);
     endSign.style.visibility = endOp < 0.05 ? 'hidden' : '';
     // The label shows the piece on the left (showing its back); before the first turn there isn't one, so it shows the first piece.
-    const r = N ? clamp(L.narrow ? curIdx() : Math.round(p) - 1, 0, N - 1) : -1;
+    const r = N ? clamp(L.narrow ? curIdx() : Math.round(wrapP()) - 1, 0, N - 1) : -1;
     if (r !== shownIdx) setNow(r);
     const at = N ? r + 1 : 0;
     const pos = at + '/' + N, posKey = pos + '|' + Math.round(p);
@@ -2006,10 +2009,10 @@ button, select { font: inherit; color: inherit; }
       shownPos = posKey;
       dividerText.textContent = pos;
       posEl.textContent = at + ' of ' + N;
-      if (!scrub.matches(':active')) scrub.value = String(clamp(L.narrow ? curIdx() : Math.round(p), 0, N));
+      if (!scrub.matches(':active')) scrub.value = String(clamp(L.narrow ? curIdx() : Math.round(wrapP()), 0, N));
     }
     prevBtn.disabled = target <= 0.001;
-    nextBtn.disabled = target >= N - 0.001;
+    nextBtn.disabled = !N;
     return swaying;
   }
 
@@ -2021,6 +2024,14 @@ button, select { font: inherit; color: inherit; }
       vel += ((target - p) * K - vel * C) * dt;
       p += vel * dt;
       if (Math.abs(target - p) < 0.0005 && Math.abs(vel) < 0.003) { p = target; vel = 0; }
+    }
+    // Once the rack has come all the way round, count from the start again (nothing on screen moves).
+    if (N && p >= loopLen() - 1e-4 && (dragging || target >= loopLen() - 1e-4)) {
+      const M = loopLen();
+      p -= M; target -= M; lastP -= M;
+      if (drag) { drag.p0 -= M; drag.samples.forEach(s => { s[1] -= M; }); }
+      if (Math.abs(p) < 1e-4) p = 0;
+      if (Math.abs(target) < 1e-4) target = 0;
     }
     pv += ((p - lastP) / dt - pv) * Math.min(1, dt * 14);
     lastP = p;
@@ -2037,10 +2048,17 @@ button, select { font: inherit; color: inherit; }
   }
   function goTo(t) {
     springK = BASE_K;
-    target = clamp(snapQ(t), 0, N);
+    t = snapQ(t);
+    if (t > N && t < loopLen()) t = t - N < loopLen() - t ? N : loopLen();
+    target = clamp(t, 0, loopLen());
     kick();
   }
-  function step(dir) { goTo(snapQ(target) + dir / stops()); }
+  // Forward from the end sign carries straight on round to the start.
+  function step(dir) {
+    let t = snapQ(target) + dir / stops();
+    if (dir > 0 && t > N) t = loopLen();
+    goTo(t);
+  }
 
   // Drag and swipe: the piece under your finger follows it; a flick keeps the rack rolling
   let lastPointer = '', keyOpen = false, touchSeen = false;
@@ -2074,7 +2092,7 @@ button, select { font: inherit; color: inherit; }
       }
     }
     const raw = drag.p0 - (e.clientX - drag.x0) / L.dragPx;
-    p = raw < 0 ? raw * 0.25 : raw > N ? N + (raw - N) * 0.25 : raw;
+    p = raw < 0 ? raw * 0.25 : raw;
     target = p;
     drag.samples.push([e.timeStamp, p]);
     while (drag.samples.length > 2 && e.timeStamp - drag.samples[0][0] > 100) drag.samples.shift();
@@ -2093,7 +2111,8 @@ button, select { font: inherit; color: inherit; }
       const flickV = L.narrow ? 0.6 * PHONE_SPEED : 0.6;
       if (v > flickV) t = Math.max(t, ceilQ(p - 0.001));
       else if (v < -flickV) t = Math.min(t, floorQ(p + 0.001));
-      target = clamp(t, 0, N);
+      if (t > N && t < loopLen()) t = t - N < loopLen() - t ? N : loopLen();
+      target = clamp(t, 0, loopLen());
       vel = v;
       // Long throws glide on a softer spring so you can watch the rack spin past.
       springK = L.narrow ? clamp(BASE_K / Math.sqrt(1 + Math.abs(target - p) / 3), 40, BASE_K) : BASE_K;
@@ -2141,7 +2160,7 @@ button, select { font: inherit; color: inherit; }
       return;
     }
     // Trackpad: the rack follows your fingers closely, then settles on the nearest piece.
-    target = clamp(target + px / (L.dragPx * 1.1), -0.08, N + 0.08);
+    target = clamp(target + px / (L.dragPx * 1.1), -0.08, loopLen() + 0.45);
     springK = WHEEL_K;
     kick();
     clearTimeout(wheelTimer);
@@ -2162,7 +2181,73 @@ button, select { font: inherit; color: inherit; }
     catSel = 'all'; sizeSel = ''; query = ''; qInput.value = '';
     renderChips(); renderSizes(); applyFilters();
   });
-  $('#end-back').addEventListener('click', () => goTo(0));
+  $('#end-back').addEventListener('click', () => step(1));
+
+  // ---------- Links to a single piece ----------
+  // Every piece has its own link, e.g. https://velocityshop.github.io/#vintage-y2k-southpole-faux-leather-jacket-2gxvsh.
+  // Opening it turns the rack to that piece. The end of the link is the piece's Square ID, so it keeps working
+  // if the listing's title changes. Turning the rack does not change the page address.
+  const pieceKey = it => it.id.toLowerCase().replace(/[^a-z0-9]/g, '').slice(-6);
+  function pieceSlug(it) {
+    let s = it.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+    if (s.length > 48) s = s.slice(0, 48).replace(/-[^-]*$/, '');
+    return (s ? s + '-' : '') + pieceKey(it);
+  }
+  const SHARE_BASE = /\.github\.io$/i.test(location.hostname) ? location.origin + location.pathname : 'https://velocityshop.github.io/';
+  const pieceLink = it => SHARE_BASE + '#' + pieceSlug(it);
+  function pieceFromAddress() {
+    let h = '';
+    try { h = decodeURIComponent((location.hash || '').slice(1)); } catch (e) { h = (location.hash || '').slice(1); }
+    if (!h) { try { h = new URLSearchParams(location.search).get('piece') || ''; } catch (e) { h = ''; } }
+    const key = h.toLowerCase().replace(/[^a-z0-9-]/g, '').split('-').pop();
+    if (!key) return -1;
+    if (view.length !== allItems.length) { catSel = 'all'; sizeSel = ''; query = ''; qInput.value = ''; renderChips(); renderSizes(); applyFilters(); }
+    return view.findIndex(it => pieceKey(it) === key);
+  }
+  // On phones the piece you're on faces you at its own position; on computers it is the one just left of centre.
+  const posOf = i => (L && L.narrow ? i : i + 1);
+  function openFromAddress(animate) {
+    const i = pieceFromAddress();
+    if (i < 0) return;
+    if (animate) { goTo(posOf(i)); return; }
+    p = target = posOf(i); vel = 0; lastP = p; shownIdx = -2; shownPos = '';
+    render(0);
+  }
+  window.addEventListener('hashchange', () => openFromAddress(true));
+
+  // ---------- Share ----------
+  const shareBtn = $('#share'), shareLabel = $('#share-label'), shareNote = $('#share-note'), shareUrl = $('#share-url');
+  let shareTimer = 0;
+  function shareSays(t) {
+    shareLabel.textContent = t;
+    clearTimeout(shareTimer);
+    shareTimer = setTimeout(() => { shareLabel.textContent = 'Share'; }, 1800);
+  }
+  async function copyText(t) {
+    try { if (navigator.clipboard && window.isSecureContext) { await navigator.clipboard.writeText(t); return true; } } catch (e) {}
+    try {
+      const ta = document.createElement('textarea');
+      ta.value = t; ta.setAttribute('readonly', ''); ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select();
+      const ok = document.execCommand('copy'); ta.remove(); return ok;
+    } catch (e) { return false; }
+  }
+  shareBtn.addEventListener('click', async () => {
+    if (shownIdx < 0 || !view[shownIdx]) return;
+    const it = view[shownIdx], url = pieceLink(it);
+    shareNote.hidden = true;
+    // Phones: the system share sheet (Messages, WhatsApp, Instagram...). Elsewhere: copy the link.
+    if (navigator.share && coarse && coarse.matches) {
+      try { await navigator.share({ title: it.name, text: it.name + ' at Velocity Shop', url }); return; }
+      catch (e) { if (e && e.name === 'AbortError') return; }
+    }
+    if (await copyText(url)) { shareSays('Link copied'); return; }
+    // Copying isn't allowed here: show the link so it can be copied by hand.
+    shareUrl.value = url;
+    shareNote.hidden = false;
+    shareUrl.focus(); shareUrl.select();
+  });
+  shareUrl.addEventListener('blur', () => { setTimeout(() => { shareNote.hidden = true; }, 200); });
 
   let resizeQueued = false;
   function queueResize() {
@@ -2179,6 +2264,7 @@ button, select { font: inherit; color: inherit; }
   renderChips();
   renderSizes();
   applyFilters();
+  openFromAddress(false);
 
   // ---------- Gallery: every piece (matching the current search and filters) in a grid ----------
   const gallery = $('#gallery'), gGrid = $('#g-grid'), gSub = $('#g-sub'), gBack = $('#g-back'), seeAll = $('#see-all');
