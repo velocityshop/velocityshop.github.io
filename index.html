@@ -1718,7 +1718,8 @@ button, select { font: inherit; color: inherit; }
       P: Math.max(W * 2.2, R * 3.2),
       oy: hangerTop + hook + H * 0.35,
       railY: frontY,
-      dragPx: R * step * Math.PI / 180,
+      // Finger travel per piece. Phones turn the rack at half the finger's speed so swipes are easier to control.
+      dragPx: R * step * Math.PI / 180 * (narrow ? 2 : 1),
       tw: clamp(W * 0.15, 42, 76),
       disc: narrow ? 36 : 48
     };
@@ -2075,8 +2076,9 @@ button, select { font: inherit; color: inherit; }
       const s = drag.samples, a = s[0], b = s[s.length - 1];
       const span = (b[0] - a[0]) / 1000;
       // Phones: a flick carries momentum, and a fast one can run the whole rack.
-      const v = clamp(span > 0 ? (b[1] - a[1]) / span : 0, L.narrow ? -90 : -14, L.narrow ? 90 : 14);
-      const throwBy = L.narrow ? Math.sign(v) * (Math.abs(v) * 0.4 + v * v * 0.55) : v * 0.3 / stops();
+      // (On phones v is already halved by the slower drag; the throw is tuned so a flick carries half as far as it used to.)
+      const v = clamp(span > 0 ? (b[1] - a[1]) / span : 0, L.narrow ? -45 : -14, L.narrow ? 45 : 14);
+      const throwBy = L.narrow ? Math.sign(v) * (Math.abs(v) * 0.4 + v * v * 1.1) : v * 0.3 / stops();
       let t = snapQ(p + throwBy);
       if (v > 0.6) t = Math.max(t, ceilQ(p - 0.001));
       else if (v < -0.6) t = Math.min(t, floorQ(p + 0.001));
