@@ -458,7 +458,7 @@ button, select { font: inherit; color: inherit; }
 </div>
 <script type="application/json" id="rack-config">{
  "store": "https://velocity-shop.square.site/s/shop",
- "synced": "2026-10-12",
+ "synced": "2026-10-13",
  "items": [
   {
    "id": "QJHHHK7W43J65NKIRZJDIYGZ",
@@ -1021,11 +1021,11 @@ button, select { font: inherit; color: inherit; }
    "added": "2026-09-30"
   },
   {
-   "id": "local-ibew",
-   "name": "IBEW Local 98 Union Tee",
-   "size": "",
-   "price": "",
-   "link": "https://velocity-shop.square.site/s/shop",
+   "id": "RMIZH6JMKCKC4PMHDKRA3GXL",
+   "name": "IBEW Local 98 Long Sleeve Shirt XL Navy Bayside Made in USA Philadelphia Union",
+   "size": "XL",
+   "price": "40",
+   "link": "https://velocity-shop.square.site/product/ibew-local-98-long-sleeve-shirt-xl-navy-bayside-made-in-usa-philadelphia-union/RMIZH6JMKCKC4PMHDKRA3GXL",
    "cat": "tees",
    "kind": "tee",
    "color": "#23314F",
@@ -1624,6 +1624,7 @@ button, select { font: inherit; color: inherit; }
   let L = null, pages = [];
   let p = 0, target = 0, vel = 0, running = false, lastT = 0, shownIdx = -2, shownPos = '';
   let pv = 0, lastP = 0;
+  let springK = 90;
   let drag = null, dragging = false, suppressClick = false, wheelTimer = 0, lastNotch = 0;
 
   // ---------- Filters ----------
@@ -1988,7 +1989,7 @@ button, select { font: inherit; color: inherit; }
     const dt = Math.min(0.04, Math.max(0.001, (now - lastT) / 1000));
     lastT = now;
     if (!dragging) {
-      const K = reduced ? 420 : 90, C = 2 * Math.sqrt(K);
+      const K = reduced ? 420 : springK, C = 2 * Math.sqrt(K);
       vel += ((target - p) * K - vel * C) * dt;
       p += vel * dt;
       if (Math.abs(target - p) < 0.0005 && Math.abs(vel) < 0.003) { p = target; vel = 0; }
@@ -2007,6 +2008,7 @@ button, select { font: inherit; color: inherit; }
     requestAnimationFrame(tick);
   }
   function goTo(t) {
+    springK = 90;
     target = clamp(snapQ(t), 0, N);
     kick();
   }
@@ -2054,12 +2056,16 @@ button, select { font: inherit; color: inherit; }
     if (drag.moved) {
       const s = drag.samples, a = s[0], b = s[s.length - 1];
       const span = (b[0] - a[0]) / 1000;
-      const v = clamp(span > 0 ? (b[1] - a[1]) / span : 0, -14, 14);
-      let t = snapQ(p + v * 0.3 / stops());
+      // Phones: a flick carries momentum, and a fast one can run the whole rack.
+      const v = clamp(span > 0 ? (b[1] - a[1]) / span : 0, L.narrow ? -90 : -14, L.narrow ? 90 : 14);
+      const throwBy = L.narrow ? Math.sign(v) * (Math.abs(v) * 0.4 + v * v * 0.55) : v * 0.3 / stops();
+      let t = snapQ(p + throwBy);
       if (v > 0.6) t = Math.max(t, ceilQ(p - 0.001));
       else if (v < -0.6) t = Math.min(t, floorQ(p + 0.001));
       target = clamp(t, 0, N);
       vel = v;
+      // Long throws glide on a softer spring so you can watch the rack spin past.
+      springK = L.narrow ? clamp(90 / Math.sqrt(1 + Math.abs(target - p) / 3), 14, 90) : 90;
       suppressClick = true;
       setTimeout(() => { suppressClick = false; }, 60);
     }
