@@ -1941,9 +1941,15 @@ button, select { font: inherit; color: inherit; }
       // Pieces join the ring at its right-most point, swing round to the front, out to the left, all the way
       // round the back, and leave as they come back round to the right-most point. One hook there stays empty
       // so the piece leaving never lands on the piece arriving.
+      // Phones: the ring's right side is off the screen, so pieces simply carry on round until they are
+      // out of view and vanish there, with no fading.
       const enterAt = 90 + L.step / 2;
-      const leaveAt = enterAt - (L.slots - 1) * L.step;
-      const onRing = s.theta < enterAt && s.theta > leaveAt;
+      const leaveAt = L.narrow ? enterAt - 360 + L.step * 0.1 : enterAt - (L.slots - 1) * L.step;
+      let onRing = s.theta < enterAt && s.theta > leaveAt;
+      if (onRing && L.narrow) {
+        const half = L.W * s.s * 0.8;
+        if (s.sx - half > L.sw || s.sx + half < 0) onRing = false;
+      }
       if (!onRing) {
         if (pg.shown) { pg.el.style.opacity = '0'; pg.el.style.visibility = 'hidden'; pg.shown = false; }
         continue;
@@ -1953,7 +1959,7 @@ button, select { font: inherit; color: inherit; }
       // just before it reaches that same edge.
       const fadeIn = smooth(enterAt, enterAt - 1.1 * L.step, s.theta);
       const fadeOut = smooth(leaveAt, leaveAt + 1.1 * L.step, s.theta);
-      const fade = Math.round(fadeIn * fadeOut * 1000) / 1000;
+      const fade = L.narrow ? 1 : Math.round(fadeIn * fadeOut * 1000) / 1000;
       if (fade !== pg.fade) { pg.leaf.style.opacity = fade >= 1 ? '' : String(fade); pg.fade = fade; }
       pg.el.style.transform = ringTransform(s);
       const cosT = Math.cos(s.theta * Math.PI / 180);
