@@ -5,11 +5,11 @@ Plain HTML, CSS and a little JavaScript. No server code and no payments: every p
 
 | Path | What it is |
 | --- | --- |
-| `index.html` | The store: every product in stock, categories, how it works, trust, about |
+| `index.html` | The store: hero, Under $40, categories, every product in stock, why us, how it works, about, FAQ |
 | `shipping-returns/index.html` | Shipping, returns, condition and checkout |
 | `products.json` | The product snapshot the pages are built from |
 | `img/p/` | Product photos (WebP, 560 px) |
-| `css/`, `js/`, `fonts/`, `img/` | Styles, script, the Switzer font, logo and icons |
+| `css/`, `js/`, `fonts/`, `img/` | Styles, script, the Satoshi font, logo and icons |
 | `sitemap.xml`, `robots.txt`, `404.html` | Search engine files and the not-found page |
 
-Products refresh from the Square store with `python3 _build/update.py` then `python3 _build/build.py` (the daily sync does this). `rack/` only forwards old rack links to the store.
+To refresh products, run `make_products.py` and `build.py` from the build kit.
