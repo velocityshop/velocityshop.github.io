@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en-CA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Velocity Shop | One-of-a-kind used clothing and finds</title>
+<meta name="description" content="Shop {{N}} one-of-a-kind pieces: vintage tees, Polo Ralph Lauren, Raptors and Blue Jays gear, jeans and resale finds. Ships in 1–2 days, 30-day returns.">
+<link rel="canonical" href="https://velocityshop.github.io/">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<meta name="theme-color" content="#0f1f10">
+<link rel="icon" href="/img/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="/img/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Velocity Shop">
+<meta property="og:locale" content="en_CA">
+<meta property="og:url" content="https://velocityshop.github.io/">
+<meta property="og:title" content="Velocity Shop | One-of-a-kind used clothing and finds">
+<meta property="og:description" content="{{N}} single pieces, checked by hand and photographed. Ships to Canada and the US in 1–2 days, with 30-day returns.">
+<meta property="og:image" content="https://velocityshop.github.io/img/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="A contact sheet of pre-loved clothing from Velocity Shop, each piece with its price and size.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Velocity Shop | One-of-a-kind used clothing and finds">
+<meta name="twitter:description" content="{{N}} single pieces, checked by hand. Ships in 1–2 days, 30-day returns.">
+<meta name="twitter:image" content="https://velocityshop.github.io/img/og.jpg">
+<meta name="twitter:image:alt" content="A contact sheet of pre-loved clothing from Velocity Shop, each piece with its price and size.">
+<link rel="preload" href="/fonts/switzer-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/css/site.css">
+<script type="application/ld+json">
+{{LD}}
+</script>
+</head>
+<body>
+<a class="skip" href="#shop">Skip to the shop</a>
+<p class="ribbon">Ships to Canada and the US in 1–2 business days <span aria-hidden="true">·</span> 30-day returns <span aria-hidden="true">·</span> Secure checkout on Square</p>
+
+<main>
+  <section class="hero" aria-labelledby="h1">
+    <div class="sheet">
+      {{HERO}}
+    </div>
+    <div class="panel">
+      <img class="panel-mark" src="/img/logo.webp" width="331" height="200" alt="Velocity Shop International" fetchpriority="high">
+      <h1 id="h1">One of each, checked by hand.</h1>
+      <p class="panel-sub">Pre-loved clothing and resale finds, every piece shown front and back and priced in CAD.</p>
+      <a class="btn" href="https://velocity-shop.square.site/?{{UTM}}&amp;utm_content=hero" target="_blank" rel="noopener">Shop now<span class="vh"> (opens our Square store)</span> <span class="arrow" aria-hidden="true">↗</span></a>
+      <p class="panel-stock">{{N}} pieces in stock, from {{FROM}}. Latest pieces added {{NEWEST}}.</p>
+      <p class="panel-links"><a href="#categories">Categories</a><a href="/shipping-returns/">Shipping &amp; returns</a><a href="#about">About</a></p>
+    </div>
+  </section>
+
+  <section class="index" id="categories" aria-labelledby="h-cat">
+    <h2 id="h-cat">Shop by category</h2>
+    <div class="index-cols">
+      <div class="index-col reveal">
+        <h3>Clothing</h3>
+        <ul role="list">{{CLOTHING}}</ul>
+        <p class="index-sum">Tees, shirts, knits, jackets, denim and jerseys.</p>
+      </div>
+      <div class="index-col reveal">
+        <h3>By size</h3>
+        <ul role="list">{{SIZES}}</ul>
+        <p class="index-sum">Every piece is the only one, so start with what fits.</p>
+      </div>
+      <div class="index-col reveal">
+        <h3>Finds</h3>
+        <ul role="list">{{FINDS}}</ul>
+        <p class="index-sum">Cards, collectibles and tested electronics.</p>
+      </div>
+      <p class="index-desc" id="index-desc" aria-hidden="true">Point at a name to see what is on that rail. Every link filters the shop below.</p>
+    </div>
+  </section>
+
+  <section class="shop" id="shop" aria-labelledby="h-shop">
+    <div class="shop-head reveal">
+      <h2 id="h-shop">Everything in stock</h2>
+      <p>{{N}} pieces, one of each, newest first. Every frame opens that piece on our Square store, where you check out.</p>
+    </div>
+    <form class="filters" aria-label="Filter the shop" onsubmit="return false">
+      <label><span>Category</span>
+        <select id="f-cat">
+          <option value="">Everything</option>
+          <option value="tees">Tees</option>
+          <option value="shirts">Shirts &amp; polos</option>
+          <option value="hoodies">Hoodies &amp; sweaters</option>
+          <option value="outerwear">Jackets &amp; vests</option>
+          <option value="bottoms">Jeans &amp; pants</option>
+          <option value="jerseys">Jerseys</option>
+          <option value="collectibles">Cards &amp; collectibles</option>
+          <option value="home">Home &amp; tech</option>
+          <option value="shoes">Shoes &amp; socks</option>
+        </select>
+      </label>
+      <label><span>Size</span>
+        <select id="f-size">
+          <option value="">Any size</option>
+          <option value="XS">XS</option>
+          <option value="S">S</option>
+          <option value="M">M</option>
+          <option value="L">L</option>
+          <option value="XL">XL</option>
+          <option value="XXL">XXL and up</option>
+          <option value="waist">Jeans by waist</option>
+        </select>
+      </label>
+      <p class="f-count" id="f-count" aria-live="polite">Showing 24 of {{N}}</p>
+    </form>
+    <ul class="grid" id="grid" role="list">
+      {{CARDS}}
+    </ul>
+    <p class="none" id="none" hidden>Nothing in that combination right now. <button type="button" class="linkish" id="reset">Show everything</button></p>
+    <div class="more-row">
+      <button type="button" class="btn btn-quiet" id="more">Show {{MORE}} more</button>
+      <p>Every piece ships in 1–2 business days, with 30-day returns. <a href="/shipping-returns/">Details</a></p>
+    </div>
+  </section>
+
+  <section class="just" id="just-added" aria-labelledby="h-just">
+    <div class="just-col reveal">
+      <h2 id="h-just">Just added</h2>
+      {{JUST}}
+    </div>
+  </section>
+
+  <section class="how" id="how-it-works" aria-labelledby="h-how">
+    <h2 id="h-how" class="reveal">How it works</h2>
+    <ol class="moments reveal" id="moments" role="list">
+        {{MOMENTS}}
+    </ol>
+  </section>
+
+  <section class="trust" id="trust" aria-labelledby="h-trust">
+    <h2 id="h-trust" class="reveal">Buy with confidence</h2>
+    <div class="trust-cols reveal">
+      <h3>Shipping</h3>
+      <ul role="list"><li>To Canada and the US</li><li>Out the door in 1–2 business days</li><li>Folded and packed with care</li></ul>
+      <h3>Returns</h3>
+      <ul role="list"><li>30 days from delivery</li><li>Unworn, as it arrived</li><li>Start one through our Square store</li></ul>
+      <h3>Condition</h3>
+      <ul role="list"><li>Every piece checked by hand</li><li>Any wear shown in the photos</li><li>And named in the listing</li></ul>
+      <h3>Checkout</h3>
+      <ul role="list"><li>Secure, on Square</li><li>Card details go to Square, not us</li><li>Prices in Canadian dollars</li></ul>
+    </div>
+    <p class="trust-more"><a href="/shipping-returns/">Read the full shipping, returns and condition notes</a></p>
+  </section>
+
+  <section class="about" id="about" aria-labelledby="h-about">
+    <h2 id="h-about" class="vh">About Velocity Shop</h2>
+    <dl class="facts">
+      <div><dt>Prices</dt><dd>In CAD, from {{FROM}}</dd></div>
+      <div><dt>Ships to</dt><dd>Canada and the US</dd></div>
+      <div><dt>Checkout</dt><dd>On Square</dd></div>
+    </dl>
+    <div class="about-text reveal">
+      <p><img class="about-mark" src="/img/logo-white.webp" width="331" height="200" alt="" loading="lazy" decoding="async"><strong>Velocity Shop</strong> is a small resale shop for pre-loved clothing and the odd find, from Polo Ralph Lauren to Pokémon cards.</p>
+      <p class="about-more">Expect Lacoste polos, Raptors and Blue Jays gear, band and tour tees, Levi's and chinos, mugs and tested vintage electronics. Almost everything is one of a kind. Each piece is checked, photographed and listed by us, and when it sells, it is gone. New pieces go up most weeks; the latest went up on {{NEWEST}}.</p>
+    </div>
+  </section>
+
+  <section class="cta" aria-labelledby="h-cta">
+    <h2 id="h-cta" class="cta-line">Everything here is a single piece, so if it is your size, it is yours.</h2>
+    <p class="cta-actions"><a class="btn" href="https://velocity-shop.square.site/?{{UTM}}&amp;utm_content=closing" target="_blank" rel="noopener">Shop now<span class="vh"> (opens our Square store)</span> <span class="arrow" aria-hidden="true">↗</span></a><a href="/shipping-returns/">Shipping &amp; returns</a></p>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="tile t-statement">
+    <p class="t-big">One of each, checked by hand.</p>
+    <p class="t-legal">© {{YEAR}} Velocity Shop. Prices in CAD. Checkout and payments by Square.</p>
+  </div>
+  <nav class="tile t-nav" aria-label="Footer">
+    <ul role="list">
+      <li><a href="#shop">Everything in stock</a></li>
+      <li><a href="#categories">Categories</a></li>
+      <li><a href="#just-added">Just added</a></li>
+      <li><a href="#how-it-works">How it works</a></li>
+      <li><a href="/shipping-returns/">Shipping &amp; returns</a></li>
+    </ul>
+  </nav>
+  <div class="tile t-ships">
+    <p>Ships to<br>Canada and the US</p>
+    <p class="t-soft">1–2 business days</p>
+  </div>
+  <div class="tile t-mail">
+    <p class="t-soft">Orders and checkout</p>
+    <a href="https://velocity-shop.square.site/?{{UTM}}&amp;utm_content=footer-store" target="_blank" rel="noopener">velocity-shop.square.site<span class="vh"> (opens in a new tab)</span> ↗</a>
+  </div>
+  <div class="tile t-mark"><img src="/img/logo-white.webp" width="331" height="200" alt="Velocity Shop International" loading="lazy" decoding="async"></div>
+  <a class="tile t-go" href="https://velocity-shop.square.site/?{{UTM}}&amp;utm_content=footer-tile" target="_blank" rel="noopener">
+    <span>Shop the store<span class="vh"> (opens our Square store)</span></span>
+    <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M12 36 36 12M16 12h20v20"/></svg>
+  </a>
+</footer>
+<script src="/js/site.js" defer></script>
+</body>
+</html>

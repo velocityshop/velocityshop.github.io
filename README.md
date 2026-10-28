@@ -1,18 +1,15 @@
 # Velocity Shop
 
-The Velocity Shop website, served with GitHub Pages at https://velocityshop.github.io/.
-Plain HTML, CSS and JavaScript: no build step, nothing server-side.
+The Velocity Shop store site, served with GitHub Pages at https://velocityshop.github.io/.
+Plain HTML, CSS and a little JavaScript. No server code and no payments: every product links to its listing on https://velocity-shop.square.site/, where checkout happens.
 
 | Path | What it is |
 | --- | --- |
-| `index.html` | Landing page (hero, Find your size, On the rail, How it works, About) |
-| `rack/index.html` | The interactive round clothing rack |
-| `rack/rack.json` | Every piece on the rack: `{store, synced, items[]}` |
-| `rack/images.json` | Photo index: `{photo: {w, h, front, back}}`, paths relative to `rack/` |
-| `rack/img/*.webp` | Garment photos, front and back |
-| `assets/` | Stylesheet, script, logo, icons and share images |
+| `index.html` | The store: every product in stock, categories, how it works, trust, about |
+| `shipping-returns/index.html` | Shipping, returns, condition and checkout |
+| `products.json` | The product snapshot the pages are built from |
+| `img/p/` | Product photos (WebP, 560 px) |
+| `css/`, `js/`, `fonts/`, `img/` | Styles, script, the Switzer font, logo and icons |
 | `sitemap.xml`, `robots.txt`, `404.html` | Search engine files and the not-found page |
 
-Both pages read `rack/rack.json` and `rack/images.json`, which the Square sync rewrites.
-Edit listings in Square, not here. Every link to Square carries `utm_source=velocityshop.github.io`.
-Old piece links (`/#piece-name-abc123`) forward to `/rack/#piece-name-abc123`.
+Products refresh from the Square store with `python3 _build/update.py` then `python3 _build/build.py` (the daily sync does this). `rack/` only forwards old rack links to the store.
