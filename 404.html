@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en-CA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Page not found | Velocity Shop</title>
+<meta name="description" content="This page is not on the rack. Head back to Velocity Shop to browse pre-loved clothing, or open the rack.">
+<link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&display=swap">
+<link rel="stylesheet" href="/assets/site.css">
+<script>
+  // Old piece links (velocityshop.github.io/some-piece-abc123) go to the rack.
+  (function () {
+    var m = location.pathname.match(/^\/([a-z0-9-]+-[a-z0-9]{6})\/?$/i);
+    if (m) location.replace('/rack/#' + m[1]);
+  })();
+</script>
+</head>
+<body>
+<main class="card" style="min-height:100svh">
+  <div class="stripe" aria-hidden="true"><i class="s-xs"></i><i class="s-s"></i><i class="s-m"></i><i class="s-l"></i><i class="s-xl"></i><i class="s-xxl"></i><i class="s-denim"></i><i class="s-xs"></i><i class="s-s"></i><i class="s-m"></i><i class="s-l"></i><i class="s-xl"></i><i class="s-xxl"></i><i class="s-denim"></i><i class="s-xs"></i><i class="s-s"></i><i class="s-m"></i><i class="s-l"></i><i class="s-xl"></i><i class="s-xxl"></i><i class="s-denim"></i><i class="s-xs"></i><i class="s-s"></i><i class="s-m"></i><i class="s-l"></i><i class="s-xl"></i><i class="s-xxl"></i><i class="s-denim"></i><i class="s-xs"></i><i class="s-s"></i><i class="s-m"></i><i class="s-l"></i><i class="s-xl"></i><i class="s-xxl"></i><i class="s-denim"></i><i class="s-xs"></i><i class="s-s"></i><i class="s-m"></i><i class="s-l"></i><i class="s-xl"></i><i class="s-xxl"></i><i class="s-denim"></i><i class="s-xs"></i><i class="s-s"></i><i class="s-m"></i><i class="s-l"></i><i class="s-xl"></i><i class="s-xxl"></i><i class="s-denim"></i><i class="s-xs"></i><i class="s-s"></i><i class="s-m"></i><i class="s-l"></i><i class="s-xl"></i><i class="s-xxl"></i><i class="s-denim"></i><i class="s-xs"></i><i class="s-s"></i><i class="s-m"></i><i class="s-l"></i><i class="s-xl"></i><i class="s-xxl"></i><i class="s-denim"></i></div>
+  <div class="card-body">
+    <img class="wordmark" src="/assets/logo.webp" width="331" height="200" alt="Velocity Shop International">
+    <h1>Not on the rack</h1>
+    <p class="lede">That page has sold, moved or never existed. Everything we have is still one click away.</p>
+    <a class="btn" href="/rack/">Browse the rack</a>
+    <nav class="card-links" aria-label="On this site"><a href="/">Velocity Shop home</a></nav>
+  </div>
+</main>
+</body>
+</html>

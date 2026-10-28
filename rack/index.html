@@ -1,0 +1,1641 @@
+<!doctype html>
+<html lang="en-CA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The rack | Velocity Shop pre-loved clothing, front and back</title>
+<meta name="description" content="Turn our round clothing rack to see every pre-loved piece in stock, front and back, with its size and CAD price. Filter by size or category and open any piece on Square.">
+<link rel="canonical" href="https://velocityshop.github.io/rack/">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<meta name="theme-color" content="#ffffff">
+<link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Velocity Shop">
+<meta property="og:locale" content="en_CA">
+<meta property="og:url" content="https://velocityshop.github.io/rack/">
+<meta property="og:title" content="The rack | Velocity Shop">
+<meta property="og:description" content="Every pre-loved piece we have, hanging on one round rack. Turn it, flip pieces front to back, and share a link to any piece.">
+<meta property="og:image" content="https://velocityshop.github.io/assets/og-rack.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="The Velocity Shop rack: pre-loved tees, polos and hoodies on a round chrome rack with size-coloured price tags.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="The rack | Velocity Shop">
+<meta name="twitter:description" content="Every pre-loved piece we have, hanging on one round rack, front and back. Prices in CAD.">
+<meta name="twitter:image" content="https://velocityshop.github.io/assets/og-rack.jpg">
+<meta name="twitter:image:alt" content="The Velocity Shop rack: pre-loved tees, polos and hoodies on a round chrome rack with size-coloured price tags.">
+<link rel="preload" href="/rack/rack.json" as="fetch" crossorigin>
+<link rel="preload" href="/rack/images.json" as="fetch" crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&family=Courier+Prime:wght@400;700&display=swap">
+<style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<style id="page-style">
+:root {
+  /* Layout: one-screen shop floor. Logo header, a filter bar, a full-bleed rail on a white slatwall where pieces fan toward the middle, face you there and swing round to show their backs on the left; a shelf label with a scrubber under it. */
+  --wall: #FFFFFF;
+  --wall-2: #F1F1F1;
+  --groove: rgba(0, 0, 0, .045);
+  --ink: #000000;
+  --muted: #4D4D4D;
+  --line: rgba(0, 0, 0, .16);
+  --tag: #FFFFFF;
+  --tag-ink: #000000;
+  --tag-hole: #FFFFFF;
+  --accent: #000000;
+  --on-accent: #FFFFFF;
+  --sign: #000000;
+  --on-sign: #FFFFFF;
+  --chrome-hi: #FAFBFB;
+  --chrome-mid: #B2B8BE;
+  --chrome-lo: #687077;
+  --shadow: rgba(0, 0, 0, .24);
+  --panel: #FFFFFF;
+  --field: #FFFFFF;
+  --danger: #C2302B;
+  --scrim: rgba(0, 0, 0, .46);
+  /* Hang-tag colours by size. Every pair of jeans or overalls gets the denim tag. */
+  --sz-xs: #D7C4FF;
+  --sz-s: #7FD6EE;
+  --sz-m: #A6E36B;
+  --sz-l: #FFD84D;
+  --sz-xl: #FF9F4A;
+  --sz-xxl: #FF6B98;
+  --sz-neck: #C9C9C9;
+  --sz-denim: #2B4A7A;
+  --f-display: "Archivo", "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
+  --f-body: "Archivo", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --f-tag: "Courier Prime", "Courier New", ui-monospace, monospace;
+  --gutter: clamp(16px, 4vw, 48px);
+  color-scheme: light;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--wall);
+  color: var(--ink);
+  font-family: var(--f-body);
+  font-size: 15px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; }
+button, select { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.page-wrap { min-height: 100svh; display: flex; flex-direction: column; }
+.wrap { padding-inline: var(--gutter); }
+
+/* Signage */
+.top { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-block: 14px 10px; }
+.brand { display: inline-flex; align-items: center; text-decoration: none; min-width: 0; }
+.logo { display: block; height: clamp(56px, 8vw, 104px); width: auto; }
+.nav { display: flex; align-items: center; gap: 8px; flex: none; }
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  font: 600 14px/1 var(--f-body);
+  padding: 10px 15px;
+  border-radius: 999px;
+  border: 1.5px solid var(--ink);
+  background: transparent;
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.btn:hover { background: var(--ink); color: var(--wall); }
+.btn.quiet { border-color: var(--line); }
+.btn.quiet:hover { background: var(--wall-2); color: var(--ink); }
+.btn.solid { background: var(--ink); color: var(--wall); }
+.btn.solid:hover { background: transparent; color: var(--ink); }
+.btn[disabled] { opacity: .5; cursor: progress; }
+
+/* Filter bar */
+.filters { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 10px 14px; padding-block: 6px 14px; border-top: 1px solid var(--line); padding-top: 14px; }
+.filter-title { display: inline-flex; align-items: center; gap: 7px; align-self: center; font: 800 13px/1 var(--f-body); letter-spacing: .08em; text-transform: uppercase; }
+.filter-title svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
+.fsel { display: grid; gap: 4px; min-width: 0; }
+.fsel > span { font: 700 11px/1 var(--f-tag); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.fsel select {
+  appearance: none; -webkit-appearance: none;
+  font: 600 14px/1.2 var(--f-body); color: var(--ink);
+  min-width: 11.5em; padding: 10px 36px 10px 12px;
+  border: 1.5px solid var(--ink); border-radius: 6px; cursor: pointer;
+  background: var(--field) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5 6 6.5l5-5' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 12px center / 12px 8px;
+}
+#size-pick { min-width: 8.5em; }
+.fsel select:hover { background-color: var(--wall-2); }
+.clear { align-self: center; font: 600 13px/1 var(--f-body); background: none; border: 0; padding: 8px 2px; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.count { margin-left: auto; align-self: center; font: 700 12px/1.4 var(--f-tag); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+
+/* The rack, laid out like an open book */
+.rack {
+  position: relative;
+  height: clamp(300px, 60svh, 720px);
+  overflow: hidden;
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: grab;
+  border-block: 1px solid var(--line);
+  background:
+    repeating-linear-gradient(to bottom, transparent 0 34px, var(--groove) 34px 36px),
+    linear-gradient(to bottom, var(--wall), var(--wall-2));
+}
+.rack:focus-visible { outline: none; box-shadow: inset 0 0 0 2px var(--accent); }
+.rack.is-dragging { cursor: grabbing; }
+/* The round rack: a chrome ring seen from slightly above, drawn in two halves so pieces can hang in between */
+.ring { position: absolute; left: 0; top: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+.ring.back { z-index: 1; }
+.ring.front { z-index: 150; }
+.ring .bar { fill: none; stroke-linecap: round; }
+.ring .bar-lo { stroke: var(--chrome-lo); }
+.ring .bar-hi { stroke: var(--chrome-hi); }
+.ring .post { stroke: var(--chrome-mid); stroke-linecap: round; }
+.book { position: absolute; inset: 0; z-index: 1; }
+
+.divider {
+  position: absolute; z-index: 250;
+  display: grid; place-items: center;
+  border-radius: 50%;
+  background: var(--ink); color: var(--wall);
+  font: 700 11px/1 var(--f-tag); font-variant-numeric: tabular-nums; letter-spacing: 0;
+  box-shadow: 0 4px 8px var(--shadow);
+  pointer-events: none;
+}
+.divider::before {
+  content: ""; position: absolute; left: 50%; top: 9%;
+  width: 34%; height: 12%; margin-left: -17%;
+  border-radius: 999px; background: var(--wall-2);
+}
+.divider span { margin-top: 16%; }
+
+.leaf-page {
+  position: absolute; left: 0; top: 0;
+  display: block;
+  text-decoration: none;
+  outline: none;
+  will-change: transform;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-user-drag: none;
+}
+.leaf { position: absolute; inset: 0; transform-origin: 50% var(--pivot); will-change: transform; transition: translate .25s ease; }
+.leaf-page:hover .leaf, .leaf-page:focus-visible .leaf { translate: 0 -5px; }
+.hook { position: absolute; top: 0; left: 50%; width: calc(var(--hook) * .77); height: var(--hook); transform: translateX(-50%); overflow: visible; z-index: 2; }
+.hook path { fill: none; stroke-linecap: round; }
+.hook .wire { stroke: var(--chrome-lo); stroke-width: 3.6; }
+.hook .shine { stroke: var(--chrome-hi); stroke-width: 1.2; transform: translateX(-.6px); }
+.stem { position: absolute; left: 50%; top: calc(var(--hook) - 3px); width: 3px; height: calc(var(--hook) * .6); margin-left: -1.5px; border-radius: 2px; background: var(--chrome-mid); }
+.face { position: absolute; z-index: 1; }
+.face > img, .face > svg {
+  display: block; width: 100%; height: auto; pointer-events: none;
+  filter: brightness(var(--shade, 1)) drop-shadow(0 calc(var(--k) * 16px) calc(var(--k) * 18px) var(--shadow));
+}
+.face.back { transform: rotateY(180deg); visibility: hidden; }
+.leaf-page.is-back .face.front { visibility: hidden; }
+.leaf-page.is-back .face.back { visibility: visible; }
+.standin {
+  position: absolute; left: 50%; top: 64%;
+  transform: translate(-50%, -50%) rotate(-5deg);
+  font: 700 calc(var(--tw) * .17)/1 var(--f-tag); letter-spacing: .08em; text-transform: uppercase;
+  color: var(--ink); background: var(--wall);
+  border: 1.5px solid var(--ink); border-radius: 3px;
+  padding: .5em .65em .42em; white-space: nowrap;
+  box-shadow: 0 2px 6px var(--shadow);
+}
+
+/* Hang tag: size and price */
+.tag {
+  position: absolute;
+  top: calc(var(--gh) * .04);
+  left: calc(50% + var(--gw) * .09);
+  width: var(--tw);
+  transform: rotate(5deg);
+  transform-origin: 50% 0;
+  filter: drop-shadow(0 3px 4px var(--shadow));
+  z-index: 3;
+}
+.tag::before {
+  content: ""; position: absolute; left: 50%; bottom: calc(100% - var(--tw) * .2);
+  width: 1.5px; height: calc(var(--gh) * .1 + 10px);
+  background: var(--ink); transform-origin: 50% 100%; transform: rotate(-34deg);
+}
+.tag.sz-xs { --tag: var(--sz-xs); }
+.tag.sz-s { --tag: var(--sz-s); }
+.tag.sz-m { --tag: var(--sz-m); }
+.tag.sz-l { --tag: var(--sz-l); }
+.tag.sz-xl { --tag: var(--sz-xl); }
+.tag.sz-xxl { --tag: var(--sz-xxl); }
+.tag.sz-neck { --tag: var(--sz-neck); }
+.tag.sz-denim { --tag: var(--sz-denim); --tag-ink: #FFFFFF; }
+.tag.sz-none .tag-card { box-shadow: inset 0 0 0 1.5px #000; }
+.tag-card {
+  display: grid; justify-items: center; gap: 0;
+  padding: calc(var(--tw) * .3) calc(var(--tw) * .06) calc(var(--tw) * .12);
+  background: var(--tag); color: var(--tag-ink);
+  clip-path: polygon(22% 0, 78% 0, 100% 14%, 100% 100%, 0 100%, 0 14%);
+  border-radius: 0 0 4px 4px;
+  position: relative;
+}
+.tag-card::before {
+  content: ""; position: absolute; left: 50%; top: calc(var(--tw) * .1); z-index: 1;
+  width: calc(var(--tw) * .13); height: calc(var(--tw) * .13); margin-left: calc(var(--tw) * -.065);
+  border-radius: 50%; background: var(--tag-hole); box-shadow: inset 0 1px 2px rgba(0, 0, 0, .35);
+}
+.tag-label { font: 700 calc(var(--tw) * .13)/1 var(--f-tag); letter-spacing: .14em; text-transform: uppercase; }
+.tag-size {
+  font-family: var(--f-display); font-weight: 900; font-stretch: 80%;
+  font-size: calc(var(--tw) * .44); line-height: 1; letter-spacing: -.01em;
+  margin-top: calc(var(--tw) * .03); white-space: nowrap;
+}
+.tag-size.long { font-size: calc(var(--tw) * .25); margin-block: calc(var(--tw) * .08) calc(var(--tw) * .04); }
+.tag-rule { width: 70%; height: 0; border-top: 1.5px dashed currentColor; opacity: .55; margin-block: calc(var(--tw) * .07); }
+.tag-price { font: 700 calc(var(--tw) * .3)/1 var(--f-tag); letter-spacing: -.02em; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.tag-price.long { font-size: calc(var(--tw) * .22); }
+.tag-cur { font: 700 calc(var(--tw) * .12)/1 var(--f-tag); letter-spacing: .14em; margin-top: calc(var(--tw) * .04); }
+.tag-soon { font: 800 calc(var(--tw) * .2)/1.05 var(--f-display); font-stretch: 80%; text-transform: uppercase; text-align: center; }
+.leaf-page:focus-visible .tag-card { outline: 2px solid var(--ink); outline-offset: 2px; }
+/* The piece named in the label below the rack gets a bright yellow star on its tag */
+.leaf-page.is-featured .tag::after {
+  content: ""; position: absolute; z-index: 2;
+  left: calc(var(--tw) * -.5); top: calc(var(--tw) * -.22);
+  width: calc(var(--tw) * .9); height: calc(var(--tw) * .9);
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 1.8l3.1 6.6 7.2.9-5.3 5 1.4 7.1L12 17.9l-6.4 3.5L7 14.3l-5.3-5 7.2-.9z' fill='%23FFE600' stroke='%23000' stroke-width='1.6' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat center / contain;
+  transform: rotate(-12deg);
+  animation: star-pop .35s cubic-bezier(.3, 1.6, .5, 1) both;
+}
+@keyframes star-pop { from { transform: rotate(-60deg) scale(0); } to { transform: rotate(-12deg) scale(1); } }
+@media (prefers-reduced-motion: reduce) { .leaf-page.is-featured .tag::after { animation: none; } }
+.leaf-page .standin { transition: opacity .2s ease; }
+.leaf-page.is-deep .standin { opacity: 0; }
+
+/* Rack signs at the start and end of the book */
+.sign { position: absolute; z-index: 5; display: grid; justify-items: center; }
+.sign-strings { position: absolute; left: 18%; right: 18%; bottom: 100%; height: var(--str, 30px); border-inline: 1.5px solid var(--chrome-lo); }
+.sign-body {
+  width: 100%;
+  display: grid; justify-items: start; gap: calc(var(--cw) * .045);
+  padding: calc(var(--cw) * .09);
+  background: var(--sign); color: var(--on-sign);
+  border-radius: 6px;
+  box-shadow: 0 10px 22px -10px var(--shadow);
+}
+.sign-eyebrow { font: 700 calc(var(--cw) * .055)/1.2 var(--f-tag); letter-spacing: .14em; text-transform: uppercase; opacity: .8; }
+.sign-title {
+  font-family: var(--f-display); font-weight: 900; font-style: italic; font-stretch: 112%;
+  font-size: calc(var(--cw) * .13); line-height: .95; text-transform: uppercase; text-wrap: balance;
+}
+.sign-meta { font-size: calc(var(--cw) * .06); line-height: 1.35; opacity: .85; }
+.sign-cta {
+  display: inline-flex; align-items: center; gap: .4em;
+  margin-top: calc(var(--cw) * .03);
+  font: 700 calc(var(--cw) * .058)/1 var(--f-body);
+  padding: .75em 1em; border-radius: 999px; border: 0;
+  background: var(--on-sign); color: var(--sign);
+  text-decoration: none; cursor: pointer; white-space: nowrap;
+}
+.sign-link { font-size: calc(var(--cw) * .052); color: inherit; background: none; border: 0; padding: 0; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; opacity: .85; }
+
+/* Shelf label */
+.shelf { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 20px; padding-block: 16px 4px; }
+.now { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 12px; flex: 1 1 380px; min-width: 0; text-decoration: none; }
+.now-no { font: 700 13px/1 var(--f-tag); background: var(--ink); color: var(--wall); padding: 7px 8px 6px; border-radius: 3px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.now-text { display: grid; gap: 4px; min-width: 0; }
+.now-name {
+  font-family: var(--f-display); font-weight: 800; font-stretch: 78%;
+  font-size: clamp(24px, 3.1vw, 38px); line-height: 1.02;
+  text-transform: uppercase; letter-spacing: .005em;
+  min-width: 0; overflow: hidden;
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;
+}
+.now-meta { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { font: 700 12px/1 var(--f-tag); letter-spacing: .06em; padding: 5px 7px 4px; border-radius: 3px; border: 1.5px solid var(--line); }
+.chip.price { background: var(--chip-bg, #fff); color: var(--chip-ink, #000); border-color: var(--chip-line, transparent); }
+.now-go {
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+  font: 800 18px/1 var(--f-body); letter-spacing: .01em;
+  background: var(--accent); color: var(--on-accent);
+  padding: 16px 26px 16px 20px; border-radius: 999px; white-space: nowrap;
+  box-shadow: 0 6px 16px -6px var(--shadow);
+  transition: transform .2s ease;
+}
+.now-go .go-star { width: 26px; height: 26px; flex: none; }
+.now:hover .now-go, .now:focus-visible .now-go { transform: translateX(3px); }
+.controls { display: flex; align-items: center; gap: 10px; flex: 1 1 300px; max-width: 460px; }
+.ctl {
+  height: 42px; min-width: 42px; padding: 0 12px; flex: none;
+  display: inline-grid; place-items: center;
+  border-radius: 999px; border: 1.5px solid var(--line); background: transparent;
+  font: 600 13px/1 var(--f-body); cursor: pointer;
+}
+.ctl:hover:not([disabled]) { background: var(--wall-2); }
+.ctl[disabled] { opacity: .35; cursor: default; }
+.ctl svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.scrub { flex: 1 1 auto; min-width: 0; width: 100%; accent-color: var(--accent); height: 28px; cursor: pointer; }
+.ctl.share { display: inline-flex; gap: 6px; font-weight: 700; }
+.ctl.share svg { width: 15px; height: 15px; }
+.share-note { flex-basis: 100%; display: grid; gap: 6px; font: 600 12px/1.3 var(--f-body); color: var(--muted); }
+.share-note input { width: 100%; min-width: 0; font: 13px/1.2 var(--f-tag); color: var(--ink); padding: 9px 10px; border: 1.5px solid var(--ink); border-radius: 6px; background: var(--field); }
+.pos { font: 700 12px/1 var(--f-tag); color: var(--muted); min-width: 7ch; text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+/* Promise strip: three hang tags, coloured like the rack's size tags, with what every order gets */
+.promise { margin-top: 20px; padding-block: clamp(28px, 4.5vw, 52px) clamp(30px, 4.5vw, 52px); border-top: 1px solid var(--line); }
+.promise-head { margin: 0 0 clamp(22px, 3vw, 32px); font: 700 12px/1 var(--f-tag); letter-spacing: .16em; text-transform: uppercase; color: var(--muted); }
+.promise-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 30px clamp(24px, 3.5vw, 52px); }
+.promise-item { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 20px; align-items: start; }
+.ptag { --tw: 68px; --ptag: var(--sz-s); position: relative; display: block; width: var(--tw); margin-top: 20px; transform: rotate(-5deg); transform-origin: 50% 0; filter: drop-shadow(0 4px 5px var(--shadow)); }
+.ptag-m { --ptag: var(--sz-m); transform: rotate(4deg); }
+.ptag-l { --ptag: var(--sz-l); transform: rotate(-2deg); }
+.ptag::before { content: ""; position: absolute; left: 50%; bottom: calc(100% - var(--tw) * .2); width: 1.5px; height: 30px; background: var(--ink); transform-origin: 50% 100%; transform: rotate(-30deg); }
+.ptag-card { position: relative; display: grid; place-items: center; height: calc(var(--tw) * 1.22); padding-top: calc(var(--tw) * .2); background: var(--ptag); clip-path: polygon(22% 0, 78% 0, 100% 14%, 100% 100%, 0 100%, 0 14%); border-radius: 0 0 5px 5px; }
+.ptag-card::before { content: ""; position: absolute; left: 50%; top: calc(var(--tw) * .1); width: calc(var(--tw) * .13); height: calc(var(--tw) * .13); margin-left: calc(var(--tw) * -.065); border-radius: 50%; background: var(--wall); box-shadow: inset 0 1px 2px rgba(0, 0, 0, .35); }
+.ptag svg { width: calc(var(--tw) * .74); height: calc(var(--tw) * .74); fill: none; stroke: var(--ink); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; overflow: visible; }
+.promise-text { min-width: 0; display: grid; gap: 8px; }
+.promise-text h3 { margin: 0; font-family: var(--f-display); font-weight: 800; font-stretch: 82%; font-size: clamp(20px, 1.9vw, 25px); line-height: 1.05; text-transform: uppercase; letter-spacing: .005em; text-wrap: balance; }
+.promise-text p { margin: 0; max-width: 36ch; color: var(--muted); font-size: 15px; line-height: 1.55; }
+@media (max-width: 860px) {
+  .promise-list { grid-template-columns: minmax(0, 1fr); gap: 30px; }
+  .promise-item { gap: 22px; }
+  .promise-text p { max-width: 46ch; }
+}
+
+.foot { margin-top: auto; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 16px; padding-block: 16px 22px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; }
+.foot a { color: var(--ink); }
+
+/* Search */
+.fsel.search { flex: 1 1 240px; max-width: 360px; }
+.fsel input {
+  font: 600 14px/1.2 var(--f-body); color: var(--ink); width: 100%;
+  padding: 10px 12px 10px 36px; border: 1.5px solid var(--ink); border-radius: 6px;
+  background: var(--field) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='7' cy='7' r='5' fill='none' stroke='%23000' stroke-width='1.8'/%3E%3Cpath d='m11 11 3.5 3.5' stroke='%23000' stroke-width='1.8' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat 12px center / 15px 15px;
+}
+.fsel input::placeholder { color: var(--muted); font-weight: 500; }
+.fsel input:focus { outline: 2px solid var(--ink); outline-offset: 1px; }
+.see-all { align-self: center; }
+.see-all svg { width: 15px; height: 15px; fill: currentColor; }
+
+/* Gallery: every piece in a grid */
+.gallery { position: fixed; inset: 0; z-index: 60; overflow-y: auto; background: var(--wall); overscroll-behavior: contain; }
+.g-head {
+  position: sticky; top: 0; z-index: 10;
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding-block: calc(env(safe-area-inset-top, 0px) + 12px) 12px;
+  background: var(--wall);
+  border-bottom: 1px solid var(--line);
+}
+.g-title { margin: 0; font: 800 clamp(18px, 2.2vw, 24px)/1.1 var(--f-display); font-stretch: 85%; text-transform: uppercase; }
+.g-title small { display: block; margin-top: 3px; font: 700 11px/1.2 var(--f-tag); letter-spacing: .1em; color: var(--muted); }
+.g-grid { list-style: none; margin: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 28px 20px; padding-block: 22px 40px; }
+.g-card { display: grid; gap: 10px; text-decoration: none; color: inherit; }
+.g-frame { position: relative; aspect-ratio: 4 / 5; border-radius: 6px; background: var(--wall-2); overflow: hidden; display: grid; place-items: center; --tw: 58px; --gw: 0px; --gh: 0px; }
+.g-frame > img, .g-frame > svg { width: 82%; height: 82%; object-fit: contain; transition: opacity .25s ease, transform .25s ease; }
+.g-frame > .g-back { position: absolute; inset: 9%; width: 82%; height: 82%; opacity: 0; }
+.g-card:hover .g-frame > .g-back, .g-card:focus-visible .g-frame > .g-back { opacity: 1; }
+.g-card:hover .g-frame.has-back > .g-front, .g-card:focus-visible .g-frame.has-back > .g-front { opacity: 0; }
+.g-card:hover .g-frame > img, .g-card:hover .g-frame > svg { transform: translateY(-3px); }
+.g-frame .tag { top: 10px; left: auto; right: 12px; transform: rotate(4deg); }
+.g-frame .tag::before { display: none; }
+.g-frame .standin { top: auto; bottom: 12px; font-size: 10px; transform: translateX(-50%) rotate(-3deg); }
+.g-name { font: 700 14px/1.25 var(--f-body); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.g-card:hover .g-name { text-decoration: underline; text-underline-offset: 3px; }
+.g-meta { display: flex; gap: 6px; flex-wrap: wrap; margin-top: -4px; font: 700 12px/1 var(--f-tag); color: var(--muted); }
+.g-empty { padding-block: 40px; color: var(--muted); }
+.leaf-page { transition: opacity .22s ease; }
+
+@media (max-width: 640px) {
+  .fsel.search { flex-basis: 100%; max-width: none; }
+  .see-all { order: 8; }
+  .g-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px 12px; }
+  .g-frame { --tw: 46px; }
+  .g-name { font-size: 13px; }
+}
+@media (max-width: 640px) {
+  .top { padding-block: 14px 6px; }
+  .nav .btn { padding: 9px 12px; font-size: 13px; }
+  .filters { gap: 10px; }
+  .filter-title { flex-basis: 100%; }
+  .fsel { flex: 1 1 0; }
+  .fsel select, #size-pick { min-width: 0; width: 100%; }
+  .count { margin-left: 0; flex-basis: 100%; order: 9; }
+  .now { grid-template-columns: auto minmax(0, 1fr); }
+  /* Phones: View piece is a big full-width button right under the piece's name */
+  .shelf { padding-top: 14px; }
+  .now { grid-template-columns: auto minmax(0, 1fr); row-gap: 14px; align-items: start; }
+  .now-no { margin-top: 4px; }
+  .now-name { font-size: 26px; -webkit-line-clamp: 3; }
+  .now-go { grid-column: 1 / -1; justify-self: stretch; padding-block: 18px; font-size: 19px; }
+  .now-name { min-height: 2.08em; }
+  .shelf { align-items: flex-start; }
+  .controls { max-width: none; flex-basis: 100%; }
+  .tag { left: calc(50% + var(--gw) * .17); top: calc(var(--gh) * .06); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .leaf, .now-go { transition: none; }
+}
+
+/* Added with the site: heading, hidden text, skip link, footer links */
+.top-title { margin: 0; display: flex; align-items: center; gap: 14px; min-width: 0; font: inherit; }
+.top-sub { font-family: "Archivo", sans-serif; font-weight: 900; font-stretch: 75%; font-size: clamp(18px, 2.2vw, 28px); line-height: 1; text-transform: uppercase; letter-spacing: -.01em; white-space: nowrap; }
+.vh { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.skip { position: absolute; left: 12px; top: -60px; z-index: 1000; background: #000; color: #fff; padding: 10px 16px; border-radius: 999px; text-decoration: none; font-weight: 700; }
+.skip:focus { top: 12px; }
+.foot-nav { display: flex; flex-wrap: wrap; gap: 4px 20px; }
+.foot-nav a { display: inline-block; padding-block: 10px; }
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "OnlineStore",
+      "@id": "https://velocityshop.github.io/#store",
+      "name": "Velocity Shop",
+      "url": "https://velocityshop.github.io/",
+      "logo": "https://velocityshop.github.io/assets/logo.png",
+      "currenciesAccepted": "CAD",
+      "sameAs": ["https://velocity-shop.square.site/"]
+    },
+    {
+      "@type": "WebPage",
+      "@id": "https://velocityshop.github.io/rack/#page",
+      "url": "https://velocityshop.github.io/rack/",
+      "name": "The rack | Velocity Shop pre-loved clothing, front and back",
+      "isPartOf": {"@id": "https://velocityshop.github.io/#website"},
+      "about": {"@id": "https://velocityshop.github.io/#store"},
+      "breadcrumb": {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {"@type": "ListItem", "position": 1, "name": "Velocity Shop", "item": "https://velocityshop.github.io/"},
+          {"@type": "ListItem", "position": 2, "name": "The rack", "item": "https://velocityshop.github.io/rack/"}
+        ]
+      }
+    }
+  ]
+}
+</script>
+</head>
+<body>
+<a class="skip" href="#rack">Skip to the rack</a>
+<div id="root" class="page-wrap">
+  <header class="top wrap">
+    <h1 class="top-title"><a class="brand" id="brand" href="/" aria-label="Velocity Shop home"><img class="logo" src="/assets/logo.webp" width="331" height="200" alt="Velocity Shop International" fetchpriority="high" width="331" height="200" alt="Velocity Shop International">
+    </a><span class="top-sub">The rack</span></h1>
+    <nav class="nav" aria-label="Store">
+      <a class="btn" id="shop-all" href="https://velocity-shop.square.site/?utm_source=velocityshop.github.io&amp;utm_medium=referral&amp;utm_campaign=rack&amp;utm_content=header" target="_blank" rel="noopener">Shop all <span aria-hidden="true">&#8599;</span><span class="vh"> (opens our Square store in a new tab)</span></a>
+    </nav>
+  </header>
+  <div class="filters wrap" role="search" aria-label="Filter the rack">
+    <span class="filter-title"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 4h12M4.5 8h7M7 12h2"/></svg>Filter</span>
+    <label class="fsel search" for="q"><span>Search</span><input id="q" type="search" placeholder="Brand, team, colour, size…" autocomplete="off" enterkeyhint="search"></label>
+    <label class="fsel" for="cat-pick"><span>Category</span><select id="cat-pick"></select></label>
+    <label class="fsel" for="size-pick"><span>Size</span><select id="size-pick"></select></label>
+    <button class="clear" id="clear-filters" type="button" hidden>Clear filters</button>
+    <span class="count" id="count" aria-live="polite"></span>
+    <button class="btn see-all" id="see-all" type="button" aria-haspopup="dialog"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>See all</button>
+  </div>
+  <main>
+    <section class="rack" id="rack" tabindex="0" aria-roledescription="carousel" aria-label="Round clothing rack. Use the left and right arrow keys to turn it.">
+      <div class="book" id="book">
+        <svg class="ring back" id="ring-back" aria-hidden="true"></svg>
+        <svg class="ring front" id="ring-front" aria-hidden="true"></svg>
+        <div class="sign" id="cover">
+          <span class="sign-strings" aria-hidden="true"></span>
+          <div class="sign-body">
+            <span class="sign-eyebrow" id="cover-eyebrow">Velocity Shop</span>
+            <span class="sign-title" id="cover-title">On the rack</span>
+            <span class="sign-meta" id="cover-meta"></span>
+            <button class="sign-cta" id="cover-next" type="button">Start browsing <span aria-hidden="true">&#8594;</span></button>
+          </div>
+        </div>
+        <div class="sign" id="end">
+          <span class="sign-strings" aria-hidden="true"></span>
+          <div class="sign-body">
+            <span class="sign-eyebrow">End of the rack</span>
+            <span class="sign-title" id="end-title">That's everything</span>
+            <a class="sign-cta" id="end-shop" href="https://velocity-shop.square.site/?utm_source=velocityshop.github.io&amp;utm_medium=referral&amp;utm_campaign=rack&amp;utm_content=end-sign" target="_blank" rel="noopener">Shop all pieces <span aria-hidden="true">&#8599;</span><span class="vh"> (opens our Square store in a new tab)</span></a>
+            <button class="sign-link" id="end-back" type="button">Back to the first piece</button>
+          </div>
+        </div>
+        <div id="pages"></div>
+        <div class="divider" id="divider" aria-hidden="true"><span id="divider-text"></span></div>
+      </div>
+    </section>
+    <div class="shelf wrap">
+      <a class="now" id="now" href="https://velocity-shop.square.site/?utm_source=velocityshop.github.io&amp;utm_medium=referral&amp;utm_campaign=rack&amp;utm_content=view-piece" target="_blank" rel="noopener" aria-live="polite">
+        <span class="now-no" id="now-no"></span>
+        <span class="now-text">
+          <span class="now-name" id="now-name"></span>
+          <span class="now-meta" id="now-meta"></span>
+        </span>
+        <span class="now-go"><svg class="go-star" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1.8l3.1 6.6 7.2.9-5.3 5 1.4 7.1L12 17.9l-6.4 3.5L7 14.3l-5.3-5 7.2-.9z" fill="#FFE600" stroke="#000" stroke-width="1.4" stroke-linejoin="round"/></svg>View piece <span aria-hidden="true">&#8599;</span></span>
+      </a>
+      <div class="controls">
+        <button class="ctl" id="prev" type="button" aria-label="Previous piece"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3 5 8l5 5"/></svg></button>
+        <input class="scrub" id="scrub" type="range" min="0" max="1" step="1" value="0" aria-label="Move along the rack">
+        <button class="ctl" id="next" type="button" aria-label="Next piece"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m6 3 5 5-5 5"/></svg></button>
+        <span class="pos" id="pos" aria-hidden="true"></span>
+        <button class="ctl share" id="share" type="button" aria-label="Share a link to this piece"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 10V2M5 5l3-3 3 3M3 9v4.5h10V9"/></svg><span id="share-label">Share</span></button>
+      </div>
+      <div class="share-note" id="share-note" hidden>
+        <label for="share-url">Copy this link to share the piece</label>
+        <input id="share-url" type="text" readonly>
+      </div>
+    </div>
+    <section class="promise wrap" aria-labelledby="promise-title">
+      <h2 class="promise-head" id="promise-title">The Velocity promise</h2>
+      <ul class="promise-list">
+      <li class="promise-item">
+        <span class="ptag ptag-s" aria-hidden="true"><span class="ptag-card"><svg viewBox="0 0 32 32"><path d="M7 8.5h13v13H7zM20 12.5h5l4 5v4h-9zM1.5 11.5h3.5M.5 15h4.5M2.5 18.5h2.5"/><circle cx="11.5" cy="22.5" r="2.6"/><circle cx="24.5" cy="22.5" r="2.6"/></svg></span></span>
+        <div class="promise-text">
+          <h3>Fast &amp; reliable shipping</h3>
+          <p>A smooth, hassle-free delivery experience, right to your doorstep.</p>
+        </div>
+      </li>
+      <li class="promise-item">
+        <span class="ptag ptag-m" aria-hidden="true"><span class="ptag-card"><svg viewBox="0 0 32 32"><path d="M16.0,5.0 L17.8,6.8 L20.2,5.8 L21.2,8.2 L23.8,8.2 L23.8,10.8 L26.2,11.8 L25.2,14.2 L27.0,16.0 L25.2,17.8 L26.2,20.2 L23.8,21.2 L23.8,23.8 L21.2,23.8 L20.2,26.2 L17.8,25.2 L16.0,27.0 L14.2,25.2 L11.8,26.2 L10.8,23.8 L8.2,23.8 L8.2,21.2 L5.8,20.2 L6.8,17.8 L5.0,16.0 L6.8,14.2 L5.8,11.8 L8.2,10.8 L8.2,8.2 L10.8,8.2 L11.8,5.8 L14.2,6.8Z"/><path d="M11 16.3l3.4 3.4 6.8-7.2"/></svg></span></span>
+        <div class="promise-text">
+          <h3>Shop with confidence</h3>
+          <p>Your trust is our priority. Shop with peace of mind knowing customer satisfaction comes first.</p>
+        </div>
+      </li>
+      <li class="promise-item">
+        <span class="ptag ptag-l" aria-hidden="true"><span class="ptag-card"><svg viewBox="0 0 32 32"><path d="M8.0,2.4 L8.6,4.1 L10.5,4.2 L9.0,5.3 L9.5,7.1 L8.0,6.1 L6.5,7.1 L7.0,5.3 L5.5,4.2 L7.4,4.1Z"/><path d="M16.0,0.5 L16.7,2.4 L18.8,2.5 L17.1,3.8 L17.7,5.7 L16.0,4.6 L14.3,5.7 L14.9,3.8 L13.2,2.5 L15.3,2.4Z"/><path d="M24.0,2.4 L24.6,4.1 L26.5,4.2 L25.0,5.3 L25.5,7.1 L24.0,6.1 L22.5,7.1 L23.0,5.3 L21.5,4.2 L23.4,4.1Z"/><circle cx="16" cy="20" r="9.6"/><path d="M12.6 25v-5.6h2l2.4-4.4c.5-.9 1.9-.6 1.9.5l-.3 2.8h3c.9 0 1.5.8 1.3 1.7l-.8 3.8c-.2.7-.8 1.2-1.5 1.2h-8zM10.2 19.4h2.4V25h-2.4z"/></svg></span></span>
+        <div class="promise-text">
+          <h3>Quality you can count on</h3>
+          <p>Every piece is carefully selected to deliver lasting value and meet your expectations.</p>
+        </div>
+      </li>
+      </ul>
+    </section>
+  </main>
+  <section class="gallery" id="gallery" role="dialog" aria-modal="true" aria-labelledby="g-title" hidden>
+    <header class="g-head wrap">
+      <h2 class="g-title" id="g-title">All pieces<small id="g-sub"></small></h2>
+      <button class="btn solid" id="g-back" type="button"><span aria-hidden="true">&#8592;</span> Go back to rack</button>
+    </header>
+    <ul class="g-grid wrap" id="g-grid"></ul>
+  </section>
+  <footer class="foot wrap">
+    <span id="foot-note">Velocity Shop &middot; Pre-loved clothing &middot; Prices in CAD</span>
+    <nav class="foot-nav" aria-label="More from Velocity Shop">
+    <a href="/">Velocity Shop home</a>
+    <a id="shop-all-2" href="https://velocity-shop.square.site/?utm_source=velocityshop.github.io&amp;utm_medium=referral&amp;utm_campaign=rack&amp;utm_content=footer" target="_blank" rel="noopener">Shop all pieces <span aria-hidden="true">&#8599;</span><span class="vh"> (opens our Square store in a new tab)</span></a>
+    </nav>
+  </footer>
+</div>
+<script id="rack-main">
+(async () => {
+  'use strict';
+  const $ = (s, r = document) => r.querySelector(s);
+  const PIVOT = 14 / 52; // rail centre, as a fraction of the hook's height
+  const SIZE_ORDER = ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL', '2XL', '3XL', 'XXXL'];
+  const CATS = [
+    ['all', 'Everything'], ['tees', 'Tees'], ['shirts', 'Polos & shirts'], ['sweats', 'Hoodies & sweats'],
+    ['outer', 'Jackets & vests'], ['bottoms', 'Jeans & bottoms'], ['jerseys', 'Jerseys']
+  ];
+  const CAT_NOUN = { all: ['piece', 'pieces'], tees: ['tee', 'tees'], shirts: ['polo or shirt', 'polos & shirts'], sweats: ['hoodie or sweat', 'hoodies & sweats'], outer: ['jacket or vest', 'jackets & vests'], bottoms: ['pair of bottoms', 'bottoms'], jerseys: ['jersey', 'jerseys'] };
+
+  const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+
+  // ---------- Stand-in garments for pieces that have no cut-out photos yet ----------
+  const KIND_DIMS = {
+    tee: [640, 612], vtee: [640, 612], ringer: [640, 612], polo: [640, 620], tank: [640, 612],
+    crew: [700, 640], hoodie: [700, 640], zip: [700, 640], shirt: [700, 670],
+    jacket: [700, 650], hoodjacket: [700, 650], furjacket: [700, 650], track: [700, 650], windbreaker: [700, 650], cardigan: [700, 650],
+    puffer: [600, 620], denimvest: [600, 620], jeans: [420, 700], overalls: [440, 700]
+  };
+  const NEUTRAL = '#9AA1A9';
+  const hexRgb = h => { h = String(h || '').replace('#', ''); if (h.length !== 6) h = '9AA1A9'; return [0, 2, 4].map(i => parseInt(h.slice(i, i + 2), 16)); };
+  const mixC = (a, b, t) => '#' + hexRgb(a).map((v, i) => Math.round(v + (hexRgb(b)[i] - v) * t).toString(16).padStart(2, '0')).join('');
+  const lumC = h => { const c = hexRgb(h).map(v => { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); }); return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]; };
+  const mirrorX = (d, W) => d.replace(/(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/g, (m, x, y) => (W - +x) + ',' + y);
+
+  function garmentSVG(it, side, uid) {
+    const kind = KIND_DIMS[it.kind] ? it.kind : 'tee';
+    const [W, H] = KIND_DIMS[kind];
+    const cx = W / 2;
+    const front = side === 'front';
+    const base = /^#[0-9a-f]{6}$/i.test(it.color || '') ? it.color : NEUTRAL;
+    const dark = mixC(base, '#000000', 0.26);
+    const deep = mixC(base, '#000000', 0.5);
+    const light = mixC(base, '#ffffff', 0.22);
+    const isDark = lumC(base) < 0.06;
+    const acc = /^#[0-9a-f]{6}$/i.test(it.accent || '') ? it.accent : dark;
+    const seam = isDark ? 'rgba(255,255,255,.17)' : 'rgba(0,0,0,.2)';
+    const fold = isDark ? 'rgba(255,255,255,.06)' : 'rgba(0,0,0,.07)';
+    const metal = isDark ? '#8C9298' : mixC(base, '#000000', 0.55);
+    const id = s => uid + s;
+    let defs = '<linearGradient id="' + id('sh') + '" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".18"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".22"/></linearGradient>';
+    let fill = base;
+    if (it.pattern === 'stripes') {
+      defs += '<pattern id="' + id('pt') + '" width="40" height="36" patternUnits="userSpaceOnUse"><rect width="40" height="36" fill="' + base + '"/><rect y="24" width="40" height="8" fill="' + acc + '"/></pattern>';
+      fill = 'url(#' + id('pt') + ')';
+    } else if (it.pattern === 'stripes3') {
+      defs += '<pattern id="' + id('pt') + '" width="40" height="48" patternUnits="userSpaceOnUse"><rect width="40" height="48" fill="' + base + '"/><rect y="20" width="40" height="7" fill="' + acc + '"/><rect y="33" width="40" height="5" fill="#F2F1EC"/></pattern>';
+      fill = 'url(#' + id('pt') + ')';
+    } else if (it.pattern === 'gingham') {
+      defs += '<pattern id="' + id('pt') + '" width="26" height="26" patternUnits="userSpaceOnUse"><rect width="26" height="26" fill="#F3F2EE"/><rect width="13" height="26" fill="' + base + '" fill-opacity=".55"/><rect width="26" height="13" fill="' + base + '" fill-opacity=".55"/></pattern>';
+      fill = 'url(#' + id('pt') + ')';
+    } else if (it.pattern === 'dots') {
+      defs += '<pattern id="' + id('pt') + '" width="30" height="30" patternUnits="userSpaceOnUse"><rect width="30" height="30" fill="' + base + '"/><circle cx="8" cy="8" r="2.6" fill="' + acc + '"/><circle cx="23" cy="23" r="2.6" fill="' + acc + '"/></pattern>';
+      fill = 'url(#' + id('pt') + ')';
+    }
+    const body = d => '<path d="' + d + '" fill="' + fill + '"/><path d="' + d + '" fill="url(#' + id('sh') + ')"/>';
+    const solid = (d, f, op) => '<path d="' + d + '" fill="' + f + '"' + (op ? ' fill-opacity="' + op + '"' : '') + '/>';
+    const line = (d, w, c, dash) => '<path d="' + d + '" fill="none" stroke="' + (c || seam) + '" stroke-width="' + (w || 3) + '" stroke-linecap="round" stroke-linejoin="round"' + (dash ? ' stroke-dasharray="' + dash + '"' : '') + '/>';
+    const both = (d, fn) => fn(d) + fn(mirrorX(d, W));
+    const dot = (x, y, r, f) => '<circle cx="' + x + '" cy="' + y + '" r="' + r + '" fill="' + f + '"/>';
+    let g = '';
+
+    if (kind === 'tee' || kind === 'vtee' || kind === 'ringer' || kind === 'polo') {
+      const neck = kind === 'vtee' && front ? 'L320,118 L398,18' : kind === 'polo' ? (front ? 'Q320,70 398,18' : 'Q320,40 398,18') : (front ? 'Q320,84 398,18' : 'Q320,42 398,18');
+      const torso = 'M242,18 ' + neck + ' L540,50 L640,162 L590,224 L556,196 L556,600 Q320,612 84,600 L84,196 L50,224 L0,162 L100,50 Z';
+      g += body(torso);
+      if (front && kind !== 'polo') g += solid('M242,18 ' + neck + ' Q320,44 242,18 Z', deep);
+      const rib = kind === 'ringer' ? acc : dark;
+      if (kind === 'vtee') g += line(front ? 'M246,22 L320,112 L394,22' : 'M246,22 Q320,46 394,22', 12, rib);
+      else if (kind !== 'polo') g += line(front ? 'M246,22 Q320,86 394,22' : 'M246,22 Q320,46 394,22', 12, rib);
+      g += both('M640,162 L590,224 L578,210 L626,150 Z', d => solid(d, kind === 'ringer' || kind === 'polo' ? rib : dark, kind === 'ringer' || kind === 'polo' ? null : '.55'));
+      g += line('M88,584 Q320,596 552,584', 2.5);
+      g += line('M232,250 Q222,400 246,560', 2, fold) + line('M410,230 Q424,380 400,560', 2, fold);
+      if (kind === 'polo') {
+        if (front) {
+          g += solid('M244,14 Q320,0 396,14 L396,24 Q320,12 244,24 Z', dark);
+          g += solid('M304,64 L336,64 L336,206 L304,206 Z', mixC(base, '#000000', 0.12)) + line('M304,64 L304,206 M336,64 L336,206 M304,206 L336,206', 2);
+          g += dot(320, 116, 6, light) + dot(320, 162, 6, light);
+          g += both('M244,14 L320,66 L292,116 L208,48 Z', d => body(d) + line(d, 2.5));
+        } else {
+          g += body('M234,12 Q320,0 406,12 L410,42 Q320,30 230,42 Z') + line('M230,42 Q320,30 410,42', 2.5);
+        }
+      }
+    } else if (kind === 'tank') {
+      const neck = front ? 'L320,104 L412,18' : 'Q320,52 412,18';
+      const torso = 'M228,18 ' + neck + ' L472,26 Q476,150 556,196 L556,600 Q320,612 84,600 L84,196 Q164,150 168,26 Z';
+      g += body(torso);
+      g += line(front ? 'M232,22 L320,98 L408,22' : 'M232,22 Q320,52 408,22', 12, acc);
+      g += both('M472,30 Q478,148 552,192', d => line(d, 12, acc));
+      g += line('M88,584 Q320,596 552,584', 2.5);
+      g += line('M110,240 L110,590', 8, mixC(base, '#000000', 0.12)) + line('M530,240 L530,590', 8, mixC(base, '#000000', 0.12));
+    } else if (kind === 'puffer' || kind === 'denimvest') {
+      const neck = front ? 'Q300,72 368,26' : 'Q300,44 368,26';
+      const torso = 'M232,26 ' + neck + ' L470,44 Q478,170 536,206 L536,600 Q300,612 64,600 L64,206 Q122,170 130,44 Z';
+      g += body(torso);
+      if (kind === 'puffer') {
+        g += body('M226,30 L224,6 Q300,16 376,6 L374,30 Q300,' + (front ? 66 : 46) + ' 226,30 Z') + line('M226,30 Q300,' + (front ? 66 : 46) + ' 374,30', 2.5);
+        for (let y = 250; y < 600; y += 64) g += line('M66,' + y + ' Q300,' + (y + 10) + ' 534,' + y, 3);
+        g += line('M110,200 Q300,212 490,200', 3);
+        if (front) { g += line('M300,62 L300,604', 4, seam); for (let y = 120; y < 600; y += 90) g += dot(300, y, 6, metal); }
+        g += both('M470,44 Q478,170 536,206', d => line(d, 9, dark));
+      } else {
+        const stitch = '#C9973F';
+        if (front) {
+          g += both('M234,24 L300,74 L276,128 L196,58 Z', d => body(d) + line(d, 2.5));
+          g += line('M300,74 L300,604', 3);
+          for (let y = 140; y < 600; y += 80) g += dot(300, y, 7, '#B8BDC2');
+          g += both('M140,230 L250,230 L250,276 L195,292 L140,276 Z', d => body(d) + line(d, 2, stitch, '5 5'));
+          g += line('M110,330 L250,330', 2, stitch, '5 5') + line('M350,330 L490,330', 2, stitch, '5 5');
+        } else {
+          g += line('M70,240 Q300,280 530,240', 2, stitch, '5 5') + line('M300,40 L300,250', 2, stitch, '5 5');
+          g += line('M190,250 L190,590', 2, stitch, '5 5') + line('M410,250 L410,590', 2, stitch, '5 5');
+        }
+        g += both('M470,44 Q478,170 536,206', d => line(d, 3, stitch, '5 5'));
+        g += line('M66,560 L534,560', 2, stitch, '5 5');
+      }
+      g += line('M68,584 Q300,596 532,584', 2.5);
+    } else if (kind === 'jeans' || kind === 'overalls') {
+      const stitch = isDark ? '#8C9298' : '#C9973F';
+      g += solid('M14,0 L' + (W - 14) + ',0 L' + (W - 14) + ',10 L14,10 Z', '#9AA0A6');
+      if (kind === 'jeans') {
+        g += both('M56,4 L80,4 L80,40 L56,40 Z', d => solid(d, '#6F767D'));
+        const legs = 'M52,24 L368,24 L370,62 L392,692 L234,698 L210,262 L186,698 L28,692 L50,62 Z';
+        g += body(legs);
+        g += line('M50,62 L370,62', 3) + line('M52,64 L368,64', 2, stitch, '5 5');
+        [74, 150, 270, 346].forEach(x => { g += solid('M' + (x - 5) + ',22 L' + (x + 5) + ',22 L' + (x + 5) + ',68 L' + (x - 5) + ',68 Z', dark); });
+        if (front) {
+          g += line('M210,64 Q216,170 236,206', 2.5, stitch, '5 5');
+          g += line('M62,72 Q120,80 132,146', 2.5, stitch, '5 5') + line('M358,72 Q300,80 288,146', 2.5, stitch, '5 5');
+        } else {
+          g += line('M50,104 Q210,134 370,104', 2.5, stitch, '5 5');
+          g += both('M78,132 L180,124 L176,222 L130,244 L84,222 Z', d => body(d) + line(d, 2.5, stitch, '5 5'));
+        }
+        g += line('M32,672 L186,678', 2.5, stitch, '5 5') + line('M234,678 L388,672', 2.5, stitch, '5 5');
+        g += line('M120,300 Q112,460 128,640', 2, fold) + line('M300,300 Q312,460 296,640', 2, fold);
+      } else {
+        g += both('M110,4 L138,4 L138,36 L110,36 Z', d => solid(d, '#6F767D'));
+        g += both('M112,30 L136,30 L150,150 L126,150 Z', d => body(d) + line(d, 2, stitch, '5 5'));
+        g += both('M118,118 L148,118 L150,136 L120,136 Z', d => solid(d, '#A9AFB4'));
+        const legs = 'M122,140 L318,140 L324,262 L380,262 L396,692 L238,698 L220,450 L202,698 L44,692 L60,262 L116,262 Z';
+        g += body(legs);
+        g += line('M60,262 L380,262', 3) + line('M62,266 L378,266', 2, stitch, '5 5');
+        if (front) {
+          g += line('M168,170 L272,170 L268,236 L172,236 Z', 2.5, stitch, '5 5');
+          g += line('M70,470 L196,470 L200,600 L72,600 Z', 2.5, stitch, '5 5') + line('M244,470 L370,470 L376,600 L248,600 Z', 2.5, stitch, '5 5');
+        } else {
+          g += both('M100,300 L190,296 L186,380 L144,398 L104,380 Z', d => line(d, 2.5, stitch, '5 5'));
+        }
+        g += line('M48,672 L202,678', 2.5, stitch, '5 5') + line('M238,678 L392,672', 2.5, stitch, '5 5');
+      }
+    } else {
+      // Long-sleeve garments that hang with their sleeves down: crew, hoodie, zip, shirt and the jackets
+      const isShirt = kind === 'shirt';
+      const isJacket = ['jacket', 'hoodjacket', 'furjacket', 'track', 'windbreaker', 'cardigan'].includes(kind);
+      const hasHood = ['hoodie', 'zip', 'hoodjacket', 'furjacket'].includes(kind);
+      const ribbed = ['crew', 'hoodie', 'zip', 'cardigan', 'furjacket'].includes(kind);
+      const ny = isJacket ? 30 : 20;
+      const neck = isShirt ? (front ? 'Q350,60 450,' + ny : 'Q350,40 450,' + ny) : (front ? 'Q350,' + (ny + 66) + ' 454,' + ny : 'Q350,' + (ny + 26) + ' 454,' + ny);
+      const nx0 = isShirt ? 250 : 246;
+      const hemY = isShirt ? 600 : 606;
+      const hem = isShirt ? 'L592,600 Q592,660 500,646 Q350,618 200,646 Q108,660 108,600' : 'L592,' + hemY + ' Q350,' + (hemY + 12) + ' 108,' + hemY;
+      const torso = 'M' + nx0 + ',' + ny + ' ' + neck + ' L566,52 Q590,62 592,120 ' + hem + ' L108,120 Q110,62 134,52 Z';
+      if (hasHood && front) {
+        g += solid('M194,74 C170,-14 530,-14 506,74 Z', dark);
+        g += solid('M250,32 C262,-4 438,-4 450,32 Q350,108 250,32 Z', deep);
+      }
+      g += body(torso);
+      if (front && !isShirt) g += solid('M' + nx0 + ',' + ny + ' ' + neck + ' Q350,' + (ny + 24) + ' ' + nx0 + ',' + ny + ' Z', deep);
+      const sleeve = 'M134,52 C96,62 76,118 70,190 L40,560 L44,612 L104,614 L110,570 L112,206 Z';
+      g += both(sleeve, d => body(d));
+      const cuff = 'M40,560 L44,612 L104,614 L110,570 Z';
+      g += both(cuff, d => solid(d, ribbed ? dark : mixC(base, '#000000', 0.12)) + line(d, 2));
+      g += both('M136,60 C104,74 88,126 82,196', d => line(d, 2.5));
+      if (ribbed) {
+        g += solid('M108,566 L592,566 L592,' + hemY + ' Q350,' + (hemY + 12) + ' 108,' + hemY + ' Z', dark);
+        for (let x = 130; x < 590; x += 22) g += line('M' + x + ',572 L' + x + ',' + (hemY + 2), 1.5, fold);
+      } else {
+        g += line(isShirt ? 'M112,600 Q112,646 200,636' : 'M112,590 Q350,602 588,590', 2.5);
+      }
+      if (!isShirt && !isJacket) g += line(front ? 'M250,' + (ny + 4) + ' Q350,' + (ny + 72) + ' 450,' + (ny + 4) : 'M250,' + (ny + 4) + ' Q350,' + (ny + 30) + ' 450,' + (ny + 4), 12, dark);
+      if (isShirt) {
+        if (front) {
+          g += solid('M250,16 Q350,0 450,16 L450,26 Q350,12 250,26 Z', dark);
+          g += both('M250,16 L350,62 L312,118 L224,54 Z', d => body(d) + line(d, 2.5));
+          g += line('M350,62 L350,628', 2.5);
+          for (let y = 150; y < 620; y += 76) g += dot(354, y, 5, '#F2F1EC');
+        } else {
+          g += body('M246,14 Q350,0 454,14 L456,40 Q350,28 244,40 Z');
+          g += line('M134,124 Q350,140 566,124', 2.5) + line('M350,132 L350,190', 2.5);
+        }
+        g += dot(74, 588, 4.5, '#F2F1EC') + dot(626, 588, 4.5, '#F2F1EC');
+      }
+      if (isJacket) {
+        const collarCol = kind === 'track' ? acc : (kind === 'cardigan' ? dark : base);
+        g += solid('M238,' + (ny + 2) + ' L236,6 Q350,18 464,6 L462,' + (ny + 2) + ' Q350,' + (front ? ny + 30 : ny + 18) + ' 238,' + (ny + 2) + ' Z', collarCol);
+        g += line('M238,' + (ny + 2) + ' Q350,' + (front ? ny + 30 : ny + 18) + ' 462,' + (ny + 2), 2.5);
+        if (front) {
+          g += line('M350,' + (ny + 30) + ' L350,' + (hemY + 6), 6, metal);
+          if (kind === 'jacket') {
+            g += line('M190,250 L270,236', 4, metal) + line('M430,236 L510,250', 4, metal);
+            g += line('M170,140 Q160,330 190,520', 2.5, isDark ? 'rgba(255,255,255,.12)' : 'rgba(255,255,255,.3)');
+            g += line('M520,140 Q534,330 506,520', 2.5, isDark ? 'rgba(255,255,255,.12)' : 'rgba(255,255,255,.3)');
+          } else {
+            g += line('M190,420 L226,520', 3) + line('M510,420 L474,520', 3);
+          }
+        } else {
+          g += line('M134,150 Q350,170 566,150', 2.5);
+        }
+        if (kind === 'track') {
+          g += both('M78,196 L48,560', d => line(d, 10, acc));
+          g += both('M96,198 L66,560', d => line(d, 5, '#F2F1EC'));
+        }
+        if (kind === 'windbreaker') g += line('M110,250 Q350,280 590,250', 3) + line('M112,256 Q350,286 588,256', 1.5, fold);
+      }
+      if (hasHood && front && (kind === 'hoodie' || kind === 'zip')) {
+        g += line('M300,' + (ny + 54) + ' L292,206', 5, light) + line('M400,' + (ny + 54) + ' L408,206', 5, light);
+        g += solid('M287,204 L297,204 L297,222 L287,222 Z', metal) + solid('M403,204 L413,204 L413,222 L403,222 Z', metal);
+      }
+      if (kind === 'hoodie' && front) g += line('M228,430 L472,430 L506,566 L194,566 Z', 3) + line('M228,430 Q214,500 194,566', 2) + line('M472,430 Q486,500 506,566', 2);
+      if (kind === 'zip' && front) g += line('M350,' + (ny + 60) + ' L350,' + (hemY + 6), 6, metal) + line('M206,440 L240,540', 3) + line('M494,440 L460,540', 3);
+      if (hasHood && !front) {
+        g += body('M224,22 C224,-6 476,-6 476,22 L464,240 Q350,288 236,240 Z');
+        g += line('M350,6 L350,266', 2.5) + line('M236,240 Q350,288 464,240', 2.5);
+      }
+      if (kind === 'furjacket' && front) {
+        g += '<path d="M232,46 C236,-14 464,-14 468,46" fill="none" stroke="#CFC6B6" stroke-width="30" stroke-linecap="round" stroke-dasharray="1 9"/>';
+        g += '<path d="M240,44 C246,-4 454,-4 460,44" fill="none" stroke="#E2DBCD" stroke-width="16" stroke-linecap="round" stroke-dasharray="1 7"/>';
+        g += line('M210,300 L290,286', 4, metal) + line('M410,286 L490,300', 4, metal);
+      }
+      if (kind === 'furjacket' && !front) {
+        g += '<path d="M228,24 C228,-8 472,-8 472,24" fill="none" stroke="#CFC6B6" stroke-width="24" stroke-linecap="round" stroke-dasharray="1 9"/>';
+      }
+      g += line('M250,240 Q238,400 262,560', 2, fold) + line('M450,230 Q466,380 440,560', 2, fold);
+    }
+    return '<svg viewBox="0 0 ' + W + ' ' + H + '" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><defs>' + defs + '</defs>' + g + '</svg>';
+  }
+
+
+  // Every Square link carries where it came from, so Square's reports show visits from the rack.
+  function safeLink(u, slot) {
+    try {
+      const url = new URL(String(u || '').trim());
+      if (url.protocol === 'http:') url.protocol = 'https:';
+      if (url.protocol !== 'https:') return '#';
+      if (/\.square\.site$/i.test(url.hostname) && slot) {
+        url.searchParams.set('utm_source', 'velocityshop.github.io');
+        url.searchParams.set('utm_medium', 'referral');
+        url.searchParams.set('utm_campaign', 'rack');
+        url.searchParams.set('utm_content', slot);
+      }
+      return url.href;
+    } catch (e) { return '#'; }
+  }
+  function fmtPrice(v) {
+    const s = String(v == null ? '' : v).trim();
+    if (!s) return '';
+    const n = Number(s);
+    if (!isFinite(n)) return '';
+    return '$' + (Number.isInteger(n) ? String(n) : n.toFixed(2));
+  }
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  }
+  function sizeRank(s) {
+    const u = String(s).toUpperCase();
+    const i = SIZE_ORDER.indexOf(u);
+    if (i >= 0) return i;
+    const n = parseFloat(u);
+    if (/^\d+(\.\d+)?$/.test(u)) return 100 + n;
+    if (/^\d+\s*[×X]\s*\d+$/.test(u)) return 200 + n;
+    return 400;
+  }
+
+  // The pieces and their photos live in rack.json and images.json next to this page; the Square sync rewrites them.
+  const getJSON = u => fetch(u, { cache: 'no-cache' }).then(r => { if (!r.ok) throw new Error(u + ' ' + r.status); return r.json(); });
+  let config = { store: '', items: [] }, images = {};
+  try { [config, images] = await Promise.all([getJSON('/rack/rack.json'), getJSON('/rack/images.json')]); } catch (e) { $('#count').textContent = 'The rack could not load. Refresh to try again.'; }
+  const imgPath = s => (s && !/^(https?:|data:|\/)/.test(s) ? '/rack/' + s : s);
+  const allItems = (config.items || []).map((it, i) => {
+    const ph = it.photo && images[it.photo] ? images[it.photo] : null;
+    const dims = ph ? [ph.w, ph.h] : (KIND_DIMS[it.kind] || KIND_DIMS.tee);
+    return {
+      raw: it,
+      id: String(it.id || 'piece-' + i),
+      name: String(it.name || ''),
+      size: String(it.size || '').trim(),
+      price: fmtPrice(it.price),
+      link: it.link,
+      cat: it.cat || 'tees',
+      hay: [it.name, it.size, it.cat, it.kind, (CATS.find(c => c[0] === it.cat) || ['', ''])[1]].join(' ').toLowerCase(),
+      no: String(i + 1).padStart(3, '0'),
+      w: dims[0], h: dims[1],
+      photo: ph ? { front: imgPath(ph.front), back: imgPath(ph.back || ph.front) } : null
+    };
+  });
+
+  const stage = $('#rack'), book = $('#book'), pagesEl = $('#pages');
+  const cover = $('#cover'), endSign = $('#end'), divider = $('#divider'), dividerText = $('#divider-text');
+  const nowEl = $('#now'), nowNo = $('#now-no'), nowName = $('#now-name'), nowMeta = $('#now-meta');
+  const prevBtn = $('#prev'), nextBtn = $('#next'), posEl = $('#pos'), scrub = $('#scrub');
+  const qInput = $('#q'), catPick = $('#cat-pick'), sizePick = $('#size-pick'), clearBtn = $('#clear-filters'), countEl = $('#count');
+
+  const storeUrl = config.store || 'https://velocity-shop.square.site/';
+  $('#shop-all').href = safeLink(storeUrl, 'header');
+  $('#shop-all-2').href = safeLink(storeUrl, 'footer');
+  $('#end-shop').href = safeLink(storeUrl, 'end-sign');
+  // Search engines get each piece as a Product with its CAD price, built from rack.json.
+  try {
+    // Only pieces with their own Square listing and a price count as products.
+    const listed = allItems.filter(it => /\/product\//.test(it.link || '') && Number(String(it.raw.price || '').replace(/[^0-9.]/g, '')) > 0);
+    const ld = document.createElement('script');
+    ld.type = 'application/ld+json';
+    ld.textContent = JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'ItemList',
+      name: 'On the rack at Velocity Shop',
+      url: 'https://velocityshop.github.io/rack/',
+      numberOfItems: listed.length,
+      itemListElement: listed.map((it, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        item: {
+          '@type': 'Product',
+          name: it.name,
+          url: safeLink(it.link),
+          ...(it.photo ? { image: ['https://velocityshop.github.io' + it.photo.front, 'https://velocityshop.github.io' + it.photo.back] } : {}),
+          ...(it.size ? { size: it.size } : {}),
+          itemCondition: 'https://schema.org/UsedCondition',
+          brand: { '@type': 'Brand', name: (it.name.match(/^(Polo Ralph Lauren|Ralph Lauren|Tommy Hilfiger|True Religion|Rock Revival|Canada Goose|The North Face|North Face|Paul & Shark|Abercrombie & Fitch|Rag & Bone|Brandy Melville|Uniqlo UT|Mitchell & Ness|[A-Z][\w'.&-]+)/) || ['', 'Velocity Shop'])[1] },
+          offers: {
+            '@type': 'Offer',
+            url: safeLink(it.link),
+            priceCurrency: 'CAD',
+            price: String(it.raw.price || '').replace(/[^0-9.]/g, '') || undefined,
+            availability: 'https://schema.org/InStock',
+            itemCondition: 'https://schema.org/UsedCondition',
+            seller: { '@id': 'https://velocityshop.github.io/#store' }
+          }
+        }
+      }))
+    });
+    document.head.appendChild(ld);
+  } catch (e) { /* the rack works without it */ }
+  if (config.synced) $('#foot-note').textContent = 'Velocity Shop · Pre-loved clothing · Prices in CAD · Updated from Square ' + config.synced;
+
+  const reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let view = allItems, N = allItems.length;
+  let catSel = 'all', sizeSel = '', query = '';
+  let L = null, pages = [];
+  let p = 0, target = 0, vel = 0, running = false, lastT = 0, shownIdx = -2, shownPos = '';
+  let pv = 0, lastP = 0;
+  // How firmly the rack pulls toward where it should be: higher settles faster.
+  const BASE_K = 170, WHEEL_K = 320;
+  // Share of the finger's movement that turns the rack on phones (1 = rack follows the finger exactly).
+  const PHONE_SPEED = 0.15;
+  let springK = BASE_K;
+  let drag = null, dragging = false, suppressClick = false, wheelTimer = 0, lastNotch = 0;
+  // The rack is a loop: positions run 0..N (N is the end sign), and one more step forward (N + 1) is the start again.
+  const loopLen = () => N + 1;
+  // Where we are, counted from the start: just past the end sign reads as just before the start.
+  const wrapP = () => (p > N + 0.5 ? p - loopLen() : p);
+
+  // ---------- Filters ----------
+  function renderChips() {
+    catPick.textContent = '';
+    CATS.forEach(([key, label]) => {
+      const n = key === 'all' ? allItems.length : allItems.filter(it => it.cat === key).length;
+      if (!n) return;
+      const o = document.createElement('option');
+      o.value = key;
+      o.textContent = label + ' (' + n + ')';
+      catPick.appendChild(o);
+    });
+    catPick.value = catSel;
+  }
+  function renderSizes() {
+    const pool = allItems.filter(it => catSel === 'all' || it.cat === catSel);
+    const sizes = [...new Set(pool.map(it => it.size).filter(Boolean))].sort((a, b) => sizeRank(a) - sizeRank(b) || a.localeCompare(b));
+    if (sizeSel && !sizes.includes(sizeSel)) sizeSel = '';
+    sizePick.textContent = '';
+    const all = document.createElement('option'); all.value = ''; all.textContent = 'All sizes'; sizePick.appendChild(all);
+    sizes.forEach(s => { const o = document.createElement('option'); o.value = s; o.textContent = s; sizePick.appendChild(o); });
+    sizePick.value = sizeSel;
+  }
+  function applyFilters() {
+    const words = query.toLowerCase().split(/\s+/).filter(Boolean);
+    view = allItems.filter(it => (catSel === 'all' || it.cat === catSel) && (!sizeSel || it.size === sizeSel) &&
+      words.every(w => it.hay.includes(w)));
+    N = view.length;
+    p = target = 0; vel = 0; shownIdx = -2; shownPos = '';
+    const noun = CAT_NOUN[catSel] || CAT_NOUN.all;
+    const sizes = SIZE_ORDER.filter(s => view.some(it => it.size.toUpperCase() === s));
+    $('#cover-title').textContent = N ? (catSel === 'all' && !sizeSel && !words.length ? 'On the rack' : (CATS.find(c => c[0] === catSel) || CATS[0])[1]) : 'Nothing here';
+    $('#cover-meta').textContent = N
+      ? N + ' ' + (N === 1 ? noun[0] : noun[1]) + (sizeSel ? ' in size ' + sizeSel : (sizes.length > 1 ? ' · Sizes ' + sizes[0] + '–' + sizes[sizes.length - 1] : '')) + ' · Prices in CAD'
+      : (words.length ? 'Nothing matches \u201c' + query.trim() + '\u201d' + (catSel !== 'all' || sizeSel ? ' with these filters.' : '.') : 'No ' + noun[1] + ' in size ' + sizeSel + ' right now.');
+    $('#cover-next').innerHTML = N ? 'Start browsing <span aria-hidden="true">&#8594;</span>' : 'Show everything';
+    $('#end-title').textContent = N > 1 ? "That's all " + N : "That's everything";
+    scrub.max = String(Math.max(N, 1));
+    scrub.value = '0';
+    scrub.disabled = N === 0;
+    clearBtn.hidden = catSel === 'all' && !sizeSel && !words.length;
+    countEl.textContent = (N === allItems.length ? N : N + ' of ' + allItems.length) + (allItems.length === 1 ? ' piece' : ' pieces');
+    build();
+  }
+  catPick.addEventListener('change', () => { catSel = catPick.value; renderSizes(); applyFilters(); });
+  clearBtn.addEventListener('click', () => { catSel = 'all'; sizeSel = ''; query = ''; qInput.value = ''; renderChips(); renderSizes(); applyFilters(); });
+  let qTimer = 0;
+  qInput.addEventListener('input', () => {
+    clearTimeout(qTimer);
+    qTimer = setTimeout(() => { if (qInput.value !== query) { query = qInput.value; applyFilters(); } }, 160);
+  });
+  qInput.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); clearTimeout(qTimer); query = qInput.value; applyFilters(); qInput.blur(); } });
+  sizePick.addEventListener('change', () => { sizeSel = sizePick.value; applyFilters(); });
+
+  // ---------- Layout ----------
+  function computeLayout() {
+    const sw = stage.clientWidth || window.innerWidth || 1024;
+    const vh = window.innerHeight || 800;
+    const narrow = sw < 640;
+    const railTop = narrow ? 22 : 30;
+    const railH = narrow ? 7 : 10;
+    const hook = narrow ? 30 : 48;
+    const bottom = narrow ? 30 : 44;
+    const pool = allItems.length ? allItems : [{ w: 640, h: 612 }];
+    const maxCW = Math.max(...pool.map(i => i.w));
+    const maxCH = Math.max(...pool.map(i => i.h));
+    // The ring: its radius, how far apart pieces hang on it (degrees), and how tall it looks from slightly above.
+    // Phones: a wider ring with hooks further apart, so one piece hangs in the middle and a quarter of each neighbour shows.
+    const R = narrow ? sw * 1.15 : clamp(sw * 0.38, 300, 720);
+    const step = narrow ? 36 : 30;
+    const ry = R * (narrow ? 0.05 : 0.08);
+    const flipShift = 8; // how far either side of centre (degrees) a piece rests front and back
+    // Phones: the piece at the front fills most of the width, with a slice of each neighbour at the edges.
+    const targetH = clamp(vh * (narrow ? 0.66 : 0.66), 300, 820);
+    const kH = (targetH - railTop - 2 * ry - hook - bottom) / maxCH;
+    const kW = narrow ? (sw * 0.98) / maxCW : (R * 0.75) / maxCW;
+    const k = Math.max(0.12, Math.min(kH, kW));
+    const W = maxCW * k, H = maxCH * k;
+    const frontY = railTop + 2 * ry;          // where the front of the ring crosses the screen
+    const hangerTop = frontY - hook * PIVOT;
+    const stageH = Math.round(hangerTop + hook + H + bottom);
+    const c = sw / 2;
+    return {
+      sw, vh, narrow, railTop, railH, hook, k, W, H, hangerTop, stageH, R, ry, step, frontY,
+      slots: Math.round(360 / step),
+      flipShift,
+      c,
+      P: Math.max(W * 2.2, R * 3.2),
+      oy: hangerTop + hook + H * 0.35,
+      railY: frontY,
+      // Finger travel per piece. Phones turn the rack at 15% of the finger's speed so swipes are easier to control.
+      dragPx: R * step * Math.PI / 180 * (narrow ? 1 / PHONE_SPEED : 1),
+      tw: clamp(W * 0.15, 42, 76),
+      disc: narrow ? 36 : 48
+    };
+  }
+
+  // Where a piece hangs on the ring, from its offset v (0 = the piece you're on).
+  // theta is how far round the ring it sits: 0 = front centre, +/-90 = the sides, 180 = the back.
+  // Each piece has two stops. It rests just right of centre facing you, then the next step turns
+  // it over just left of centre to show its back; the step after that swings it off left as the next piece arrives.
+  // The ring turns a little during the flip and the rest of the way between pieces, so the spacing stays the same.
+  function ringSlot(v) {
+    const d = L.flipShift, cyc = L.step;
+    const k = Math.floor(p), f = p - k;
+    const T = k * cyc + (f <= 0.5 ? (f / 0.5) * 2 * d : 2 * d + ((f - 0.5) / 0.5) * (cyc - 2 * d));
+    const theta = d + (p + v) * cyc - T;
+    const q = -v; // how far along this piece's own cycle we are
+    let rot = q <= 0 ? theta : q >= 0.5 ? 180 + theta : theta + 180 * (q / 0.5);
+    rot = ((rot + 180) % 360 + 360) % 360 - 180;
+    const t = theta * Math.PI / 180;
+    const x = L.R * Math.sin(t), z = L.R * (Math.cos(t) - 1);
+    const s = L.P / (L.P - z);                 // perspective scale at that depth
+    const sx = L.c + x * s;                    // where its hook lands on screen
+    const sy = L.frontY - L.ry * (1 - Math.cos(t));
+    return { x, z, s, theta, rot, sx, sy };
+  }
+  // Move the hook onto the ring, shrink with distance, then turn the piece to follow the ring.
+  function ringTransform(s) {
+    return 'translate(' + (s.sx - L.c).toFixed(2) + 'px,' + (s.sy - L.frontY).toFixed(2) + 'px) scale(' + s.s.toFixed(4) + ') perspective(' + Math.round(L.W * 3) + 'px) rotateY(' + s.rot.toFixed(2) + 'deg)';
+  }
+  // Where the rack can come to rest: every piece on desktop; front and back of every piece on phones.
+  const stops = () => 2;
+  const snapQ = x => Math.round(x * stops()) / stops();
+  const ceilQ = x => Math.ceil(x * stops()) / stops();
+  const floorQ = x => Math.floor(x * stops()) / stops();
+  // On phones the piece stays the one you're on while it shows its back.
+  const curIdx = () => Math.floor(wrapP() + 0.25);
+
+  // The ring itself: back half behind every piece, front half in front of the pieces at the back.
+  function drawRing() {
+    const pts = (a0, a1) => {
+      const out = [];
+      for (let a = a0; a <= a1 + 0.01; a += 4) {
+        const t = a * Math.PI / 180, z = L.R * (Math.cos(t) - 1), s = L.P / (L.P - z);
+        out.push((L.c + L.R * Math.sin(t) * s).toFixed(1) + ',' + (L.frontY - L.ry * (1 - Math.cos(t))).toFixed(1));
+      }
+      return 'M' + out.join(' L');
+    };
+    const bar = d => '<path class="bar bar-lo" d="' + d + '" stroke-width="' + L.railH + '"/><path class="bar bar-hi" d="' + d + '" stroke-width="' + (L.railH * 0.3).toFixed(1) + '" transform="translate(0,' + (-L.railH * 0.18).toFixed(1) + ')"/>';
+    const cz = -L.R, cs = L.P / (L.P - cz), cy = L.frontY - L.ry;
+    const side = L.R * cs;
+    const back = '<line class="post" x1="' + L.c + '" y1="0" x2="' + L.c + '" y2="' + cy.toFixed(1) + '" stroke-width="' + (L.railH * 0.8).toFixed(1) + '"/>' +
+      '<line class="post" x1="' + (L.c - side).toFixed(1) + '" y1="' + cy.toFixed(1) + '" x2="' + (L.c + side).toFixed(1) + '" y2="' + cy.toFixed(1) + '" stroke-width="' + (L.railH * 0.5).toFixed(1) + '"/>' +
+      bar(pts(90, 270));
+    $('#ring-back').innerHTML = back;
+    $('#ring-front').innerHTML = bar(pts(-90, 90));
+  }
+
+  // Which hang-tag colour a piece gets: by size, except jeans and overalls, which all share the denim tag.
+  function sizeClass(it) {
+    const k = it.raw && it.raw.kind;
+    if (k === 'jeans' || k === 'overalls') return 'denim';
+    const u = it.size.toUpperCase().replace(/\s+/g, '');
+    if (!u) return 'none';
+    if (u === 'XXS' || u === 'XS') return 'xs';
+    if (u === 'S' || u === 'M' || u === 'L' || u === 'XL') return u.toLowerCase();
+    if (/^(XXL|2XL|XXXL|3XL)$/.test(u)) return 'xxl';
+    if (/^\d+(\.\d+)?$/.test(u)) return 'neck';
+    return 'none';
+  }
+  function tagHTML(it) {
+    const cls = 'tag sz-' + sizeClass(it);
+    if (!it.size && !it.price) {
+      return '<span class="' + cls + '" aria-hidden="true"><span class="tag-card"><span class="tag-label">New</span><span class="tag-soon">Just in</span></span></span>';
+    }
+    return '<span class="' + cls + '" aria-hidden="true"><span class="tag-card">' +
+      (it.size ? '<span class="tag-label">Size</span><span class="tag-size' + (it.size.length > 3 ? ' long' : '') + '">' + esc(it.size) + '</span>' : '') +
+      (it.size && it.price ? '<span class="tag-rule"></span>' : '') +
+      (it.price ? '<span class="tag-price' + (it.price.length > 4 ? ' long' : '') + '">' + esc(it.price) + '</span><span class="tag-cur">CAD</span>' : '') +
+      '</span></span>';
+  }
+
+  function faceHTML(it, side, uid) {
+    const art = it.photo ? '<img alt="" draggable="false" decoding="async">' : garmentSVG(it.raw, side, uid) + '<span class="standin" aria-hidden="true">See photos &#8599;</span>';
+    return '<span class="face ' + side + '">' + art + tagHTML(it) + '</span>';
+  }
+
+  function pageHTML(it, i) {
+    return '<span class="leaf">' +
+      '<svg class="hook" viewBox="0 0 40 52" aria-hidden="true"><path class="wire" d="M20 52V21C20 5 33 3 33 13"/><path class="shine" d="M20 50V21C20 7 31 5 32 12"/></svg>' +
+      '<span class="stem" aria-hidden="true"></span>' +
+      faceHTML(it, 'front', 'g' + i + 'f') + faceHTML(it, 'back', 'g' + i + 'b') +
+      '</span>';
+  }
+
+  // The opening sign hangs on the empty left side of the rack before you start; the end sign hangs centred.
+  function placeSign(el, where) {
+    const cw = where === 'left' && L.narrow ? Math.min(L.sw * 0.5, 220) : L.W * (L.narrow ? 0.86 : 0.7);
+    const top = L.frontY + L.railH / 2 + (L.narrow ? 22 : 34);
+    const left = where === 'left' ? (L.narrow ? 12 : L.c - 70 - cw) : L.c - cw / 2;
+    el.dataset.centerShift = String(L.c - cw / 2 - left);
+    el.style.left = left + 'px';
+    el.style.top = top + 'px';
+    el.style.width = cw + 'px';
+    el.style.setProperty('--cw', cw + 'px');
+    el.style.setProperty('--str', (top - L.frontY) + 'px');
+  }
+
+  function build() {
+    L = computeLayout();
+    stage.style.height = L.stageH + 'px';
+    stage.style.setProperty('--rail-top', L.railTop + 'px');
+    stage.style.setProperty('--rail-h', L.railH + 'px');
+    book.style.perspective = Math.round(L.P) + 'px';
+    book.style.perspectiveOrigin = L.c + 'px ' + Math.round(L.oy) + 'px';
+    drawRing();
+    placeSign(cover, 'left');
+    placeSign(endSign, 'center');
+    divider.style.width = divider.style.height = L.disc + 'px';
+    // The position marker caps the centre post of the rack.
+    divider.style.left = (L.c - L.disc / 2) + 'px';
+    divider.style.top = Math.max(2, L.frontY - L.ry - L.disc * 0.5) + 'px';
+    divider.style.fontSize = (L.narrow ? 9 : 11) + 'px';
+
+    const hadFocus = document.activeElement && document.activeElement.classList.contains('leaf-page') ? document.activeElement.dataset.id : '';
+    pagesEl.textContent = '';
+    const frag = document.createDocumentFragment();
+    pages = view.map((it, i) => {
+      const a = document.createElement('a');
+      a.className = 'leaf-page';
+      // On phones and touch screens the pieces are not links at all (taps turn the rack; View piece opens the listing).
+      if (!noRackLinks()) a.href = safeLink(it.link, 'rack-piece');
+      a.target = '_blank';
+      a.rel = 'noopener';
+      a.draggable = false;
+      a.dataset.idx = String(i);
+      a.dataset.id = it.id;
+      a.setAttribute('aria-label', it.name + (it.size ? ', size ' + it.size : '') + (it.price ? ', ' + it.price + ' Canadian' : '') + (it.photo ? '' : ', shown as a drawing') + '. Opens the listing.');
+      a.style.left = (L.c - L.W / 2) + 'px';
+      a.style.top = L.hangerTop + 'px';
+      a.style.width = L.W + 'px';
+      a.style.height = (L.hook + L.H) + 'px';
+      a.style.transformOrigin = '50% ' + (L.hook * PIVOT).toFixed(2) + 'px';
+      a.style.setProperty('--hook', L.hook + 'px');
+      a.style.setProperty('--pivot', (L.hook * PIVOT) + 'px');
+      a.style.setProperty('--k', String(L.k));
+      a.style.setProperty('--tw', L.tw + 'px');
+      a.innerHTML = pageHTML(it, i);
+      const gw = it.w * L.k, gh = it.h * L.k;
+      a.querySelectorAll('.face').forEach(f => {
+        f.style.left = ((L.W - gw) / 2) + 'px';
+        f.style.top = L.hook + 'px';
+        f.style.width = gw + 'px';
+        f.style.setProperty('--gw', gw + 'px');
+        f.style.setProperty('--gh', gh + 'px');
+      });
+      if (it.photo) {
+        const imgs = a.querySelectorAll('img');
+        imgs[0].dataset.src = it.photo.front;
+        imgs[1].dataset.src = it.photo.back;
+      }
+      frag.appendChild(a);
+      return { el: a, leaf: a.firstElementChild, idx: i, ang: 0, sway: 0, swayV: 0, back: null, shown: true, shade: 1, fade: 1, z: '' };
+    });
+    pagesEl.appendChild(frag);
+    render(0);
+    if (hadFocus) { const pg = pages.find(x => x.el.dataset.id === hadFocus); if (pg) pg.el.focus({ preventScroll: true }); }
+  }
+
+  function setNow(idx) {
+    shownIdx = idx;
+    pages.forEach(pg => { const on = pg.idx === idx; if (on !== !!pg.featured) { pg.el.classList.toggle('is-featured', on); pg.featured = on; } });
+    nowMeta.textContent = '';
+    if (idx < 0) {
+      nowEl.removeAttribute('href');
+      nowNo.textContent = 'No. —';
+      nowName.textContent = 'Nothing matches these filters';
+      return;
+    }
+    const it = view[idx];
+    nowEl.href = safeLink(it.link, 'view-piece');
+    nowNo.textContent = 'No. ' + it.no;
+    nowName.textContent = it.name;
+    const chip = (t, cls) => { const s = document.createElement('span'); s.className = 'chip' + (cls ? ' ' + cls : ''); s.textContent = t; nowMeta.appendChild(s); };
+    if (it.size) chip('Size ' + it.size);
+    if (it.price) chip(it.price + ' CAD', 'price');
+    const sc = sizeClass(it);
+    nowMeta.style.setProperty('--chip-bg', sc === 'none' ? '#FFFFFF' : 'var(--sz-' + sc + ')');
+    nowMeta.style.setProperty('--chip-ink', sc === 'denim' ? '#FFFFFF' : '#000000');
+    nowMeta.style.setProperty('--chip-line', sc === 'none' ? '#000000' : 'transparent');
+    if (!it.size && !it.price) chip('Just in');
+    if (!it.photo) chip('Photos on listing');
+  }
+
+  // 0 at e0, 1 at e1, eased in between (works either way round).
+  function smooth(e0, e1, x) {
+    if (e0 === e1) return x < e0 ? 0 : 1;
+    const t = clamp((x - e0) / (e1 - e0), 0, 1);
+    return t * t * (3 - 2 * t);
+  }
+
+  function render(dt) {
+    let swaying = false;
+    const swayTarget = reduced ? 0 : clamp(-pv * 3.2, -8, 8);
+    for (const pg of pages) {
+      // Round the loop: a piece can sit ahead of you or behind you; use whichever lands on the visible ring.
+      let v = pg.idx - p;
+      v -= Math.floor(v / loopLen()) * loopLen();
+      if (ringSlot(v).theta >= (L.narrow ? 90 + L.step / 2 : 90 + L.flipShift)) v -= loopLen();
+      const s = ringSlot(v);
+      const a = Math.abs(s.theta);
+      // Pieces join the ring at its right-most point, swing round to the front, out to the left, all the way
+      // round the back, and leave as they come back round to the right-most point. One hook there stays empty
+      // so the piece leaving never lands on the piece arriving.
+      // Phones: the ring's right side is off the screen, so pieces simply carry on round until they are
+      // out of view and vanish there, with no fading.
+      const enterAt = L.narrow ? 90 + L.step / 2 : 90 + L.flipShift;
+      // Computers: the leaving piece comes all the way back to the right-most hook and hands over there: as the
+      // rack turns it fades out while the next piece fades in on that same hook, so no hook is ever left empty.
+      const swap = 2 * L.flipShift;
+      const leaveAt = L.narrow ? enterAt - 360 + L.step * 0.1 : enterAt - 360 - swap;
+      let onRing = s.theta < enterAt && s.theta > leaveAt;
+      if (onRing && L.narrow) {
+        const half = L.W * s.s * 0.8;
+        if (s.sx - half > L.sw || s.sx + half < 0) onRing = false;
+      }
+      if (!onRing) {
+        if (pg.shown) { pg.el.style.opacity = '0'; pg.el.style.visibility = 'hidden'; pg.shown = false; }
+        continue;
+      }
+      if (!pg.shown) { pg.el.style.visibility = ''; pg.el.style.opacity = ''; pg.shown = true; }
+      if (!pg.loaded) { pg.loaded = true; pg.el.querySelectorAll('img[data-src]').forEach(im => { im.src = im.dataset.src; im.removeAttribute('data-src'); }); }
+      // A new piece eases in side-on at the right edge, on the same hook the leaving piece fades out from.
+      // The hand-over happens while the piece at the front turns over, so at every stop each hook shows one whole piece.
+      const fadeIn = smooth(enterAt, enterAt - swap, s.theta);
+      const fadeOut = smooth(leaveAt, leaveAt + swap, s.theta);
+      const fade = L.narrow ? 1 : Math.round(fadeIn * fadeOut * 1000) / 1000;
+      if (fade !== pg.fade) { pg.leaf.style.opacity = fade >= 1 ? '' : String(fade); pg.fade = fade; }
+      pg.el.style.transform = ringTransform(s);
+      const cosT = Math.cos(s.theta * Math.PI / 180);
+      // Front half hangs in front of the ring's front bar; back half behind it.
+      // Where pieces overlap at the front, the left side (backs) always sits on top of the right side (fronts).
+      const z = String(cosT >= 0 ? 160 + Math.round(cosT * 100) : 2 + Math.round((cosT + 1) * 100));
+      if (z !== pg.z) { pg.el.style.zIndex = z; pg.z = z; }
+      const isBack = Math.abs(s.rot) > 90;
+      if (isBack !== pg.back) { pg.el.classList.toggle('is-back', isBack); pg.back = isBack; }
+      const deep = a > 45;
+      if (deep !== pg.deep) { pg.el.classList.toggle('is-deep', deep); pg.deep = deep; }
+      // Shading changes in small steps: each change repaints the photo, so this keeps turning smooth.
+      const shade = Math.round((0.6 + 0.4 * (1 + cosT) / 2) * 50) / 50;
+      if (shade !== pg.shade) { pg.el.style.setProperty('--shade', shade.toFixed(3)); pg.shade = shade; }
+      if (dt > 0) {
+        pg.swayV += ((swayTarget - pg.sway) * 55 - pg.swayV * 6.5) * dt;
+        pg.sway += pg.swayV * dt;
+        if (Math.abs(pg.sway) > 0.02 || Math.abs(pg.swayV) > 0.05) swaying = true;
+        else { pg.sway = 0; pg.swayV = 0; }
+        pg.leaf.style.transform = pg.sway ? 'rotate(' + pg.sway.toFixed(3) + 'deg)' : '';
+      }
+    }
+    // The opening sign hangs on the left until you start turning, then slides away and fades.
+    // When nothing matches the filters it moves to the centre on its own.
+    // Phones stop halfway through each piece (front, then back), so the sign is fully gone by the first stop.
+    const coverRate = 2.5;
+    const pc = wrapP();
+    const coverOp = N ? clamp(1 - Math.abs(pc) * coverRate, 0, 1) : 1;
+    cover.style.transform = N ? 'translateX(' + (-Math.max(pc, 0) * 32 * coverRate).toFixed(1) + 'px)' : 'translateX(' + cover.dataset.centerShift + 'px)';
+    cover.style.zIndex = '450';
+    cover.style.opacity = String(coverOp);
+    cover.style.visibility = coverOp < 0.05 ? 'hidden' : '';
+    // The end sign fades in over everything, centred, as you reach the end of the rack.
+    const endOp = N ? clamp(1 - Math.abs(N - p) * 1.5, 0, 1) : 0;
+    endSign.style.transform = 'translateY(' + ((1 - endOp) * 12).toFixed(1) + 'px)';
+    endSign.style.zIndex = '500';
+    endSign.style.opacity = String(endOp);
+    endSign.style.visibility = endOp < 0.05 ? 'hidden' : '';
+    // The label shows the piece on the left (showing its back); before the first turn there isn't one, so it shows the first piece.
+    const r = N ? clamp(curIdx(), 0, N - 1) : -1;
+    if (r !== shownIdx) setNow(r);
+    const at = N ? r + 1 : 0;
+    const pos = at + '/' + N, posKey = pos + '|' + Math.round(p);
+    if (posKey !== shownPos) {
+      shownPos = posKey;
+      dividerText.textContent = pos;
+      posEl.textContent = at + ' of ' + N;
+      if (!scrub.matches(':active')) scrub.value = String(clamp(curIdx(), 0, N));
+    }
+    prevBtn.disabled = target <= 0.001;
+    nextBtn.disabled = !N;
+    return swaying;
+  }
+
+  function tick(now) {
+    const dt = Math.min(0.04, Math.max(0.001, (now - lastT) / 1000));
+    lastT = now;
+    if (!dragging) {
+      const K = reduced ? 420 : springK, C = 2 * Math.sqrt(K);
+      vel += ((target - p) * K - vel * C) * dt;
+      p += vel * dt;
+      if (Math.abs(target - p) < 0.0005 && Math.abs(vel) < 0.003) { p = target; vel = 0; }
+    }
+    // Once the rack has come all the way round, count from the start again (nothing on screen moves).
+    if (N && p >= loopLen() - 1e-4 && (dragging || target >= loopLen() - 1e-4)) {
+      const M = loopLen();
+      p -= M; target -= M; lastP -= M;
+      if (drag) { drag.p0 -= M; drag.samples.forEach(s => { s[1] -= M; }); }
+      if (Math.abs(p) < 1e-4) p = 0;
+      if (Math.abs(target) < 1e-4) target = 0;
+    }
+    pv += ((p - lastP) / dt - pv) * Math.min(1, dt * 14);
+    lastP = p;
+    if (Math.abs(pv) < 0.002) pv = 0;
+    const swaying = render(dt) || pv !== 0;
+    if (dragging || p !== target || swaying) requestAnimationFrame(tick);
+    else running = false;
+  }
+  function kick() {
+    if (running) return;
+    running = true;
+    lastT = performance.now();
+    requestAnimationFrame(tick);
+  }
+  function goTo(t) {
+    springK = BASE_K;
+    t = snapQ(t);
+    if (t > N && t < loopLen()) t = t - N < loopLen() - t ? N : loopLen();
+    target = clamp(t, 0, loopLen());
+    kick();
+  }
+  // Forward from the end sign carries straight on round to the start.
+  function step(dir) {
+    let t = snapQ(target) + dir / stops();
+    if (dir > 0 && t > N) t = loopLen();
+    goTo(t);
+  }
+
+  // Drag and swipe: the piece under your finger follows it; a flick keeps the rack rolling
+  let lastPointer = '', keyOpen = false, touchSeen = false;
+  const coarse = window.matchMedia ? window.matchMedia('(hover: none), (pointer: coarse)') : null;
+  function noRackLinks() { return touchSeen || (L && L.narrow) || !!(coarse && coarse.matches); }
+  function stripRackLinks() { pages.forEach(pg => pg.el.removeAttribute('href')); }
+  stage.addEventListener('pointerdown', e => { lastPointer = e.pointerType; keyOpen = false; }, true);
+  stage.addEventListener('touchstart', () => { lastPointer = 'touch'; if (!touchSeen) { touchSeen = true; stripRackLinks(); } }, { capture: true, passive: true });
+  stage.addEventListener('pointerdown', e => {
+    if (e.button !== 0 || !N) return;
+    drag = { id: e.pointerId, x0: e.clientX, y0: e.clientY, p0: p, moved: false, samples: [[e.timeStamp, p]] };
+  });
+  window.addEventListener('pointermove', e => {
+    if (!drag || e.pointerId !== drag.id) return;
+    const dx = e.clientX - drag.x0, dy = e.clientY - drag.y0;
+    if (!drag.moved) {
+      if (Math.abs(dx) > 6 && Math.abs(dx) > Math.abs(dy)) {
+        drag.moved = true;
+        dragging = true;
+        drag.x0 = e.clientX;
+        drag.p0 = p;
+        vel = 0;
+        try { stage.setPointerCapture(e.pointerId); } catch (err) {}
+        stage.classList.add('is-dragging');
+        kick();
+      } else if (Math.abs(dy) > 10) {
+        drag = null;
+        return;
+      } else {
+        return;
+      }
+    }
+    const raw = drag.p0 - (e.clientX - drag.x0) / L.dragPx;
+    p = raw < 0 ? raw * 0.25 : raw;
+    target = p;
+    drag.samples.push([e.timeStamp, p]);
+    while (drag.samples.length > 2 && e.timeStamp - drag.samples[0][0] > 100) drag.samples.shift();
+  });
+  function endDrag(e) {
+    if (!drag || e.pointerId !== drag.id) return;
+    if (drag.moved) {
+      const s = drag.samples, a = s[0], b = s[s.length - 1];
+      const span = (b[0] - a[0]) / 1000;
+      // Phones: a flick carries momentum, and a fast one can run the whole rack.
+      // (On phones v is already cut to PHONE_SPEED by the slower drag; the throw is tuned so a flick carries that share of its old distance.)
+      const v = clamp(span > 0 ? (b[1] - a[1]) / span : 0, L.narrow ? -90 * PHONE_SPEED : -14, L.narrow ? 90 * PHONE_SPEED : 14);
+      const throwBy = L.narrow ? Math.sign(v) * (Math.abs(v) * 0.4 + v * v * 0.55 / PHONE_SPEED) : v * 0.3 / stops();
+      let t = snapQ(p + throwBy);
+      // A deliberate swipe always moves on at least one stop (threshold scaled to the phone's slower drag).
+      const flickV = L.narrow ? 0.6 * PHONE_SPEED : 0.6;
+      if (v > flickV) t = Math.max(t, ceilQ(p - 0.001));
+      else if (v < -flickV) t = Math.min(t, floorQ(p + 0.001));
+      if (t > N && t < loopLen()) t = t - N < loopLen() - t ? N : loopLen();
+      target = clamp(t, 0, loopLen());
+      vel = v;
+      // Long throws glide on a softer spring so you can watch the rack spin past.
+      springK = L.narrow ? clamp(BASE_K / Math.sqrt(1 + Math.abs(target - p) / 3), 40, BASE_K) : BASE_K;
+      suppressClick = true;
+      setTimeout(() => { suppressClick = false; }, 60);
+    }
+    dragging = false;
+    drag = null;
+    stage.classList.remove('is-dragging');
+    kick();
+  }
+  window.addEventListener('pointerup', endDrag);
+  window.addEventListener('pointercancel', endDrag);
+  stage.addEventListener('click', e => {
+    if (suppressClick) { e.preventDefault(); e.stopPropagation(); suppressClick = false; return; }
+    // Phones and touch screens: taps on the rack never open a listing (View piece does that). A tap on the
+    // right half turns the rack to the next piece, a tap on the left half back one.
+    // Signs keep their own buttons, and pressing Enter on a focused piece still opens it.
+    const touchy = (L && L.narrow) || lastPointer === 'touch' || lastPointer === 'pen';
+    if (!touchy || keyOpen || e.target.closest('.sign')) { keyOpen = false; return; }
+    e.preventDefault(); e.stopPropagation();
+    if (!N) return;
+    const rect = stage.getBoundingClientRect();
+    const x = (e.clientX || rect.left + rect.width / 2) - rect.left;
+    step(x >= rect.width / 2 ? 1 : -1);
+  }, true);
+  stage.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.closest('.leaf-page')) keyOpen = true; }, true);
+  stage.addEventListener('dragstart', e => e.preventDefault());
+
+  // Wheel and trackpad. At either end of the rack, vertical scrolling passes through to the page.
+  stage.addEventListener('wheel', e => {
+    if (!N) return;
+    const horiz = Math.abs(e.deltaX) > Math.abs(e.deltaY);
+    const d = horiz ? e.deltaX : e.deltaY;
+    if (!d) return;
+    const at = Math.round(target);
+    if (!horiz && ((d > 0 && at >= N) || (d < 0 && at <= 0))) return;
+    e.preventDefault();
+    const px = e.deltaMode === 1 ? d * 32 : e.deltaMode === 2 ? d * L.sw : d;
+    // Mouse wheel: every notch moves one piece, so spinning the wheel runs along the rack.
+    // (Some mice send two events per notch; ignore the twin.)
+    if (e.deltaMode !== 0 || Math.abs(px) >= 50) {
+      const now = performance.now();
+      if (now - lastNotch > 35) { lastNotch = now; step(Math.sign(px)); }
+      return;
+    }
+    // Trackpad: the rack follows your fingers closely, then settles on the nearest piece.
+    target = clamp(target + px / (L.dragPx * 1.1), -0.08, loopLen() + 0.45);
+    springK = WHEEL_K;
+    kick();
+    clearTimeout(wheelTimer);
+    wheelTimer = setTimeout(() => goTo(target), 110);
+  }, { passive: false });
+
+  stage.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'PageDown') { e.preventDefault(); step(1); }
+    else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); step(-1); }
+    else if (e.key === 'Home') { e.preventDefault(); goTo(0); }
+    else if (e.key === 'End') { e.preventDefault(); goTo(N); }
+  });
+  prevBtn.addEventListener('click', () => step(-1));
+  nextBtn.addEventListener('click', () => step(1));
+  scrub.addEventListener('input', () => goTo(+scrub.value));
+  $('#cover-next').addEventListener('click', () => {
+    if (N) { step(1); return; }
+    catSel = 'all'; sizeSel = ''; query = ''; qInput.value = '';
+    renderChips(); renderSizes(); applyFilters();
+  });
+  $('#end-back').addEventListener('click', () => step(1));
+
+  // ---------- Links to a single piece ----------
+  // Every piece has its own link, e.g. https://velocityshop.github.io/rack/#vintage-y2k-southpole-faux-leather-jacket-2gxvsh.
+  // Opening it turns the rack to that piece. The end of the link is the piece's Square ID, so it keeps working
+  // if the listing's title changes. Turning the rack does not change the page address.
+  const pieceKey = it => it.id.toLowerCase().replace(/[^a-z0-9]/g, '').slice(-6);
+  function pieceSlug(it) {
+    let s = it.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+    if (s.length > 48) s = s.slice(0, 48).replace(/-[^-]*$/, '');
+    return (s ? s + '-' : '') + pieceKey(it);
+  }
+  const SHARE_BASE = 'https://velocityshop.github.io/rack/';
+  const pieceLink = it => SHARE_BASE + '#' + pieceSlug(it);
+  function pieceFromAddress() {
+    let h = '';
+    try { h = decodeURIComponent((location.hash || '').slice(1)); } catch (e) { h = (location.hash || '').slice(1); }
+    if (!h) { try { h = new URLSearchParams(location.search).get('piece') || ''; } catch (e) { h = ''; } }
+    const key = h.toLowerCase().replace(/[^a-z0-9-]/g, '').split('-').pop();
+    if (!key) return -1;
+    if (view.length !== allItems.length) { catSel = 'all'; sizeSel = ''; query = ''; qInput.value = ''; renderChips(); renderSizes(); applyFilters(); }
+    return view.findIndex(it => pieceKey(it) === key);
+  }
+  // On phones the piece you're on faces you at its own position; on computers it is the one just left of centre.
+  const posOf = i => i;
+  function openFromAddress(animate) {
+    const i = pieceFromAddress();
+    if (i < 0) return;
+    if (animate) { goTo(posOf(i)); return; }
+    p = target = posOf(i); vel = 0; lastP = p; shownIdx = -2; shownPos = '';
+    render(0);
+  }
+  window.addEventListener('hashchange', () => openFromAddress(true));
+
+  // ---------- Share ----------
+  const shareBtn = $('#share'), shareLabel = $('#share-label'), shareNote = $('#share-note'), shareUrl = $('#share-url');
+  let shareTimer = 0;
+  function shareSays(t) {
+    shareLabel.textContent = t;
+    clearTimeout(shareTimer);
+    shareTimer = setTimeout(() => { shareLabel.textContent = 'Share'; }, 1800);
+  }
+  async function copyText(t) {
+    try { if (navigator.clipboard && window.isSecureContext) { await navigator.clipboard.writeText(t); return true; } } catch (e) {}
+    try {
+      const ta = document.createElement('textarea');
+      ta.value = t; ta.setAttribute('readonly', ''); ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select();
+      const ok = document.execCommand('copy'); ta.remove(); return ok;
+    } catch (e) { return false; }
+  }
+  shareBtn.addEventListener('click', async () => {
+    if (shownIdx < 0 || !view[shownIdx]) return;
+    const it = view[shownIdx], url = pieceLink(it);
+    shareNote.hidden = true;
+    // Phones: the system share sheet (Messages, WhatsApp, Instagram...). Elsewhere: copy the link.
+    if (navigator.share && coarse && coarse.matches) {
+      try { await navigator.share({ title: it.name, text: it.name + ' at Velocity Shop', url }); return; }
+      catch (e) { if (e && e.name === 'AbortError') return; }
+    }
+    if (await copyText(url)) { shareSays('Link copied'); return; }
+    // Copying isn't allowed here: show the link so it can be copied by hand.
+    shareUrl.value = url;
+    shareNote.hidden = false;
+    shareUrl.focus(); shareUrl.select();
+  });
+  shareUrl.addEventListener('blur', () => { setTimeout(() => { shareNote.hidden = true; }, 200); });
+
+  let resizeQueued = false;
+  function queueResize() {
+    if (resizeQueued) return;
+    resizeQueued = true;
+    requestAnimationFrame(() => {
+      resizeQueued = false;
+      if (Math.abs(stage.clientWidth - L.sw) > 1 || Math.abs(window.innerHeight - L.vh) > 140) build();
+    });
+  }
+  if ('ResizeObserver' in window) new ResizeObserver(queueResize).observe(stage);
+  window.addEventListener('resize', queueResize);
+
+  renderChips();
+  renderSizes();
+  applyFilters();
+  openFromAddress(false);
+
+  // ---------- Gallery: every piece (matching the current search and filters) in a grid ----------
+  const gallery = $('#gallery'), gGrid = $('#g-grid'), gSub = $('#g-sub'), gBack = $('#g-back'), seeAll = $('#see-all');
+  let galleryFrom = null;
+  function renderGallery() {
+    gGrid.textContent = '';
+    const filtered = view.length !== allItems.length;
+    $('#g-title').firstChild.textContent = filtered ? 'Matching pieces' : 'All pieces';
+    gSub.textContent = view.length + (view.length === 1 ? ' piece' : ' pieces') + ' · Prices in CAD';
+    if (!view.length) {
+      const li = document.createElement('li'); li.className = 'g-empty'; li.textContent = 'Nothing matches your search and filters.'; gGrid.appendChild(li);
+      return;
+    }
+    const frag = document.createDocumentFragment();
+    view.forEach((it, i) => {
+      const li = document.createElement('li');
+      const a = document.createElement('a');
+      a.className = 'g-card';
+      a.href = safeLink(it.link, 'gallery');
+      a.target = '_blank';
+      a.rel = 'noopener';
+      a.setAttribute('aria-label', it.name + (it.size ? ', size ' + it.size : '') + (it.price ? ', ' + it.price + ' Canadian' : '') + '. Opens the listing.');
+      const frame = document.createElement('span');
+      frame.className = 'g-frame' + (it.photo && it.photo.back !== it.photo.front ? ' has-back' : '');
+      if (it.photo) {
+        const f = new Image(); f.className = 'g-front'; f.alt = ''; f.decoding = 'async'; f.loading = 'lazy'; f.src = it.photo.front;
+        frame.appendChild(f);
+        if (it.photo.back !== it.photo.front) {
+          const b = new Image(); b.className = 'g-back'; b.alt = ''; b.decoding = 'async'; b.loading = 'lazy'; b.src = it.photo.back;
+          frame.appendChild(b);
+        }
+      } else {
+        frame.innerHTML = garmentSVG(it.raw, 'front', 'gal' + i).replace('<svg ', '<svg class="g-front" ') + '<span class="standin" aria-hidden="true">See photos &#8599;</span>';
+      }
+      frame.insertAdjacentHTML('beforeend', tagHTML(it));
+      const name = document.createElement('span'); name.className = 'g-name'; name.textContent = it.name;
+      a.append(frame, name);
+      li.appendChild(a);
+      frag.appendChild(li);
+    });
+    gGrid.appendChild(frag);
+  }
+  function openGallery() {
+    renderGallery();
+    galleryFrom = document.activeElement;
+    gallery.hidden = false;
+    gallery.scrollTop = 0;
+    document.documentElement.style.overflow = 'hidden';
+    gBack.focus({ preventScroll: true });
+  }
+  function closeGallery() {
+    gallery.hidden = true;
+    document.documentElement.style.overflow = '';
+    if (galleryFrom && galleryFrom.focus) galleryFrom.focus({ preventScroll: true });
+  }
+  seeAll.addEventListener('click', openGallery);
+  gBack.addEventListener('click', closeGallery);
+  gallery.addEventListener('keydown', e => { if (e.key === 'Escape') closeGallery(); });
+
+})();
+</script>
+</body>
+</html>
