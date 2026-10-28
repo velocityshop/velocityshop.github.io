@@ -84,6 +84,7 @@ p { margin: 0; }
 .s-xs { background: var(--sz-xs); } .s-s { background: var(--sz-s); } .s-m { background: var(--sz-m); }
 .s-l { background: var(--sz-l); } .s-xl { background: var(--sz-xl); } .s-xxl { background: var(--sz-xxl); } .s-denim { background: var(--sz-denim); }
 .card-body { display: grid; justify-items: center; align-content: center; text-align: center; gap: 0; padding: 28px 20px 28px; }
+@media (max-width: 479px) { .slip .slip-rows tr { display: grid; } .slip .slip-rows th { padding-right: 0; } .slip .slip-rows td { text-align: left; padding: 0; } }
 @media (max-width: 639px) { .wordmark { width: 42%; } .card h1 { margin-top: 18px; } .lede { margin-top: 20px; } .card .btn { margin-top: 22px; } .stage-caption { min-height: 0; } }
 .wordmark { width: min(56%, 260px); height: auto; aspect-ratio: 331 / 200; }
 .card h1 { margin-top: 28px; font-size: var(--t1); font-weight: 900; font-stretch: 72%; line-height: .94; letter-spacing: -.025em; text-transform: uppercase; max-width: 14ch; }
