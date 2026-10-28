@@ -1,0 +1,17 @@
+{
+ "_note": "Real eBay data only. Reviews are copied word for word from the public feedback page (positive, written by buyers, not eBay's automated feedback). Best sellers need view counts from Seller Hub: add {\"square_id\": \"...\", \"views\": 123} entries, clothing only.",
+ "profile": "https://www.ebay.ca/usr/velocity-shop",
+ "feedback": "https://www.ebay.ca/fdbk/feedback_profile/velocity-shop?filter=feedback_page:RECEIVED_AS_SELLER",
+ "score": 27,
+ "positive": "100%",
+ "checked": "2026-10-28",
+ "reviews": [
+  {"text": "Product as described. Shipping was amazingly fast. Compared to Amazon the price was great. Packaged to get here safely from across Canada.", "buyer": "i***j", "item": "Magnavox VCR VHS Player & Recorder"},
+  {"text": "LOVE IT!!! Exactly what I wanted! Came quickly and very clean!", "buyer": "u***c", "item": "Kool-Aid Man plush, vintage mascot"},
+  {"text": "Amazing seller, Great price and extremly fast shipping! Thank you!", "buyer": "t***r", "item": "Pikachu Black Star Promo, PSA 10"},
+  {"text": "This buzz came in perfect condition!", "buyer": "4***i", "item": "Toy Story Buzz Lightyear talking figure"},
+  {"text": "Great price and great service!", "buyer": "o***y", "item": "Froakie Hidden Fates holo, PSA 10"},
+  {"text": "No problems!", "buyer": "a***f", "item": "Toronto Argonauts Grey Cup hoodie, XL"}
+ ],
+ "bestsellers": []
+}

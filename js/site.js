@@ -1,11 +1,10 @@
-// Velocity Shop: filters and "Show more" for the shop, category tiles, back photos on hover, entrances.
+// Velocity Shop: the hero deck, filters on Shop all, back photos on hover, entrances.
 // Every product is already in the HTML; this only shows, hides and reveals what is there.
 (function () {
   'use strict';
   document.documentElement.classList.add('js');
   var $ = function (s, r) { return (r || document).querySelector(s); };
   var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
-  var PAGE = 24;
   var still = window.matchMedia('(prefers-reduced-motion: reduce)');
   var finePointer = window.matchMedia('(hover: hover) and (pointer: fine)');
 
@@ -44,47 +43,81 @@
     document.addEventListener('focusin', wake);
   }
 
-  // ---------- The shop ----------
+  // ---------- Hero deck: every 2 seconds the top piece is dealt off and tucked under the pile ----------
+  var deck = $('#deck');
+  if (deck && !still.matches) {
+    var order = $$('.deck-card', deck);
+    var pause = $('#deck-pause');
+    var paused = false, held = false, timer = null;
+    var place = function () {
+      order.forEach(function (c, i) {
+        c.style.setProperty('--p', i);
+        if (i) { c.setAttribute('tabindex', '-1'); c.setAttribute('aria-hidden', 'true'); }
+        else { c.removeAttribute('tabindex'); c.removeAttribute('aria-hidden'); }
+      });
+    };
+    var deal = function () {
+      if (paused || held || document.hidden) return;
+      var top = order[0];
+      top.classList.add('is-dealt');
+      setTimeout(function () {
+        order.push(order.shift());
+        place();
+        top.classList.remove('is-dealt');
+      }, 280);
+    };
+    var start = function () { if (!timer) timer = setInterval(deal, 2000); };
+    var hold = function (on) { held = on; };
+    deck.addEventListener('pointerenter', function () { hold(true); });
+    deck.addEventListener('pointerleave', function () { hold(false); });
+    deck.addEventListener('focusin', function () { hold(true); });
+    deck.addEventListener('focusout', function () { hold(false); });
+    pause.hidden = false;
+    pause.addEventListener('click', function () {
+      paused = !paused;
+      pause.setAttribute('aria-pressed', String(paused));
+      pause.textContent = paused ? 'Play' : 'Pause';
+    });
+    // Only deal while the deck is on screen.
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(function (en) {
+        if (en[0].isIntersecting) start(); else { clearInterval(timer); timer = null; }
+      }).observe(deck);
+    } else start();
+  }
+
+  // ---------- Shop all: filters, read from and written to the address (?cat=tees) ----------
   var grid = $('#grid');
   if (!grid) return;
   var cards = $$('.card', grid);
   var fCat = $('#f-cat'), fSize = $('#f-size'), fPrice = $('#f-price');
-  var count = $('#f-count'), more = $('#more'), none = $('#none');
-  var shown = PAGE;
+  var count = $('#f-count'), none = $('#none');
   var price = function (c) { return parseFloat(c.querySelector('.price').textContent.replace(/[^0-9.]/g, '')); };
+  var params = new URLSearchParams(location.search);
+  [['cat', fCat], ['size', fSize], ['price', fPrice]].forEach(function (p) {
+    var v = params.get(p[0]);
+    if (v && $$('option', p[1]).some(function (o) { return o.value === v; })) p[1].value = v;
+  });
 
   function matches(c) {
     return (!fCat.value || c.getAttribute('data-cat') === fCat.value) &&
            (!fSize.value || c.getAttribute('data-size') === fSize.value) &&
            (!fPrice.value || price(c) < Number(fPrice.value));
   }
-  function render(animateFrom) {
-    var hits = cards.filter(matches);
-    cards.forEach(function (c) { c.hidden = true; c.classList.remove('is-new'); });
-    hits.slice(0, shown).forEach(function (c, i) {
-      c.hidden = false;
-      if (animateFrom != null && i >= animateFrom && !still.matches) c.classList.add('is-new');
-    });
+  function render() {
+    var hits = 0;
+    cards.forEach(function (c) { var on = matches(c); c.hidden = !on; if (on) hits++; });
     var filtered = fCat.value || fSize.value || fPrice.value;
-    count.textContent = hits.length ? 'Showing ' + Math.min(shown, hits.length) + ' of ' + hits.length + (filtered ? ' matching' : '') : 'No matches';
-    more.parentNode.hidden = hits.length <= shown;
-    more.textContent = 'Show ' + Math.min(PAGE, hits.length - shown) + ' more';
-    none.hidden = hits.length > 0;
-    return hits;
+    count.textContent = hits ? (filtered ? hits + ' of ' + cards.length + ' pieces' : cards.length + ' pieces') : 'No matches';
+    none.hidden = hits > 0;
+    var q = new URLSearchParams();
+    if (fCat.value) q.set('cat', fCat.value);
+    if (fSize.value) q.set('size', fSize.value);
+    if (fPrice.value) q.set('price', fPrice.value);
+    var qs = q.toString();
+    history.replaceState(null, '', location.pathname + (qs ? '?' + qs : ''));
   }
-  function filter() { shown = PAGE; render(null); }
-  [fCat, fSize, fPrice].forEach(function (s) { s.addEventListener('change', filter); });
-  $('#reset').addEventListener('click', function () { fCat.value = ''; fSize.value = ''; fPrice.value = ''; filter(); fCat.focus(); });
-  more.addEventListener('click', function () {
-    var from = shown;
-    shown += PAGE;
-    var hits = render(from);
-    var next = hits[from] && hits[from].querySelector('a');
-    if (next) next.focus({ preventScroll: true });
-  });
-  // Category tiles set the filter, then the link jumps to the shop.
-  $$('.cat[data-cat]').forEach(function (a) {
-    a.addEventListener('click', function () { fCat.value = a.getAttribute('data-cat'); fSize.value = ''; fPrice.value = ''; filter(); });
-  });
-  render(null);
+  [fCat, fSize, fPrice].forEach(function (s) { s.addEventListener('change', function () { render(); window.scrollTo({ top: 0 }); }); });
+  $('#reset').addEventListener('click', function () { fCat.value = ''; fSize.value = ''; fPrice.value = ''; render(); fCat.focus(); });
+  render();
 })();

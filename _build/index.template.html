@@ -39,9 +39,9 @@
   <a class="nav-brand" href="/"><img src="/img/logo.webp" width="331" height="200" alt="Velocity Shop International, home"></a>
   <nav aria-label="Main">
     <ul role="list" class="nav-links">
-      <li><a href="#shop">Shop all</a></li>
+      <li><a href="/shop/">Shop all</a></li>
       <li><a href="#categories">Categories</a></li>
-      <li><a href="#under-40">Under $40</a></li>
+      <li><a href="#{{ROW_ID}}">{{ROW_LABEL}}</a></li>
       <li><a href="#faq">FAQ</a></li>
     </ul>
   </nav>
@@ -60,7 +60,7 @@
         <li>Ships to Canada and the US in 1-2 business days</li>
         <li>30-day returns and secure checkout on Square</li>
       </ul>
-      <p class="hero-cta"><a class="btn btn-green" href="https://velocity-shop.square.site/?{{UTM}}&amp;utm_content=hero" target="_blank" rel="noopener">Shop now<span class="vh"> (opens our Square store)</span> <span aria-hidden="true">↗</span></a><a class="hero-link" href="#under-40">Under $40 deals</a></p>
+      <p class="hero-cta"><a class="btn btn-green" href="https://velocity-shop.square.site/?{{UTM}}&amp;utm_content=hero" target="_blank" rel="noopener">Shop now<span class="vh"> (opens our Square store)</span> <span aria-hidden="true">↗</span></a><a class="hero-link" href="/shop/">Shop all {{N}} pieces</a></p>
     </div>
     {{HERO_IMG}}
   </section>
@@ -75,56 +75,31 @@
     </ul>
   </section>
 
-  <section class="row" id="under-40" aria-labelledby="h-deals">
-    <div class="sec-head">
-      <h2 id="h-deals">Under $40</h2>
-      <p>{{N_DEALS}} pieces for less than forty dollars. The newest eight are here.</p>
-    </div>
-    <ul class="cards cards-row" role="list">
-      {{DEALS}}
-    </ul>
-  </section>
+  {{ROW}}
 
   <section class="cats" id="categories" aria-labelledby="h-cats">
     <div class="cats-head">
       <h2 id="h-cats">Shop by category</h2>
       <p>Know what you're after? Jump straight to it.</p>
-      <a class="btn btn-ghost" href="#shop">See everything</a>
+      <a class="btn btn-ghost" href="/shop/">Shop all {{N}} pieces</a>
     </div>
     <ul class="cat-grid" role="list">
         {{CATS}}
     </ul>
   </section>
 
-  <section class="shop" id="shop" aria-labelledby="h-shop">
+  <section class="shop" id="just-in" aria-labelledby="h-shop">
     <div class="sec-head">
-      <h2 id="h-shop">Everything in stock</h2>
-      <p>{{N}} pieces, newest first. Every card opens that piece on our Square store, where you check out.</p>
+      <h2 id="h-shop">Just in</h2>
+      <p>The newest {{HOME_N}} of {{N}} pieces. Every card opens that piece on our Square store, where you check out.</p>
     </div>
-    <form class="filters" aria-label="Filter the shop" onsubmit="return false">
-      <label><span>Category</span>
-        <select id="f-cat"><option value="">Everything</option>{{CAT_OPTIONS}}</select>
-      </label>
-      <label><span>Size</span>
-        <select id="f-size">
-          <option value="">Any size</option><option value="XS">XS</option><option value="S">S</option><option value="M">M</option>
-          <option value="L">L</option><option value="XL">XL</option><option value="XXL">XXL and up</option><option value="waist">Jeans by waist</option>
-        </select>
-      </label>
-      <label><span>Price</span>
-        <select id="f-price"><option value="">Any price</option><option value="40">Under $40</option><option value="75">Under $75</option></select>
-      </label>
-      <p class="f-count" id="f-count" aria-live="polite">Showing 24 of {{N}}</p>
-    </form>
-    <ul class="cards" id="grid" role="list">
-      {{CARDS}}
+    <ul class="cards" role="list">
+      {{JUST_IN}}
     </ul>
-    <p class="none" id="none" hidden>Nothing in that combination right now. <button type="button" class="linkish" id="reset">Clear the filters</button></p>
-    <p class="more-row"><button type="button" class="btn btn-ghost" id="more">Show {{MORE}} more</button></p>
+    <p class="more-row"><a class="btn btn-green btn-big" href="/shop/">Shop all {{N}} pieces <span aria-hidden="true">→</span></a></p>
   </section>
 
-  {{EBAY}}
-
+  <!-- why -->
   <section class="why" id="why" aria-labelledby="h-why">
     <div class="why-pic">{{WHY_IMG}}</div>
     <div class="why-text">
@@ -138,6 +113,8 @@
       <a class="btn btn-green" href="https://velocity-shop.square.site/?{{UTM}}&amp;utm_content=why" target="_blank" rel="noopener">Shop the store<span class="vh"> (opens our Square store)</span> <span aria-hidden="true">↗</span></a>
     </div>
   </section>
+  <!-- /why -->
+  {{EBAY}}
 
   <section class="how" id="how-it-works" aria-labelledby="h-how">
     <div class="sec-head sec-head-center">
@@ -154,7 +131,8 @@
       <h2 id="h-about">About Velocity Shop</h2>
       <p>Velocity Shop is a small resale shop for pre-loved clothing and the odd find: Polo Ralph Lauren and Lacoste polos, Raptors and Blue Jays gear, band and tour tees, Levi's and chinos, plus Pokémon cards, mugs and tested vintage electronics.</p>
       <p>Almost everything is one of a kind. Each piece is checked, photographed and listed by us, and when it sells, it's gone. The latest pieces went up on {{NEWEST}}.</p>
-      <a class="btn btn-green" href="#shop">See what's in stock</a>
+      <p>The grid is {{GRID_N}} of the pieces on the rail right now. Each one is the only one.</p>
+      <a class="btn btn-green" href="/shop/">Shop all {{N}} pieces</a>
     </div>
     <div class="about-pic">{{ABOUT_IMG}}</div>
   </section>
@@ -185,8 +163,8 @@
   <nav class="foot-col" aria-label="Shop">
     <h2>Shop</h2>
     <ul role="list">
-      <li><a href="#shop">Everything in stock</a></li>
-      <li><a href="#under-40">Under $40</a></li>
+      <li><a href="/shop/">Shop all</a></li>
+      <li><a href="#{{ROW_ID}}">{{ROW_LABEL}}</a></li>
       <li><a href="#categories">Categories</a></li>
       <li><a href="https://velocity-shop.square.site/?{{UTM}}&amp;utm_content=footer" target="_blank" rel="noopener">Square store<span class="vh"> (opens in a new tab)</span> ↗</a></li>
     </ul>

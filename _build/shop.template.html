@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en-CA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Shop all {{N}} pieces | Velocity Shop</title>
+<meta name="description" content="Every one-of-a-kind piece in stock at Velocity Shop: {{N}} tees, polos, hoodies, jackets, jeans, jerseys and finds, from {{FROM}} CAD. Filter by category, size and price.">
+<link rel="canonical" href="https://velocityshop.github.io/shop/">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<meta name="theme-color" content="#1f4fd8">
+<link rel="icon" href="/img/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="/img/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Velocity Shop">
+<meta property="og:locale" content="en_CA">
+<meta property="og:url" content="https://velocityshop.github.io/shop/">
+<meta property="og:title" content="Shop all {{N}} pieces | Velocity Shop">
+<meta property="og:description" content="{{N}} single pieces, checked by hand and photographed front and back. Ships to Canada and the US in 1-2 days, with 30-day returns.">
+<meta property="og:image" content="https://velocityshop.github.io/img/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="The Velocity Shop store: pre-loved clothing and finds, each one of a kind, with a green Shop now button.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Shop all {{N}} pieces | Velocity Shop">
+<meta name="twitter:description" content="{{N}} single pieces, checked by hand. Ships in 1-2 days, 30-day returns.">
+<meta name="twitter:image" content="https://velocityshop.github.io/img/og.jpg">
+<meta name="twitter:image:alt" content="The Velocity Shop store: pre-loved clothing and finds, each one of a kind, with a green Shop now button.">
+<link rel="preload" href="/fonts/satoshi-700.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/css/site.css">
+<script type="application/ld+json">
+{{LD_SHOP}}
+</script>
+</head>
+<body class="shop-page">
+<a class="skip" href="#grid">Skip to the pieces</a>
+<header class="shop-top">
+  <a class="nav-brand" href="/"><img src="/img/logo.webp" width="331" height="200" alt="Velocity Shop International, home"></a>
+  <form class="filters" aria-label="Filter the shop" onsubmit="return false">
+    <label><span>Category</span>
+      <select id="f-cat"><option value="">Everything</option>{{CAT_OPTIONS}}</select>
+    </label>
+    <label><span>Size</span>
+      <select id="f-size">
+        <option value="">Any size</option><option value="XS">XS</option><option value="S">S</option><option value="M">M</option>
+        <option value="L">L</option><option value="XL">XL</option><option value="XXL">XXL and up</option><option value="waist">Jeans by waist</option>
+      </select>
+    </label>
+    <label><span>Price</span>
+      <select id="f-price"><option value="">Any price</option><option value="40">Under $40</option><option value="75">Under $75</option></select>
+    </label>
+    <p class="f-count" id="f-count" aria-live="polite">{{N}} pieces</p>
+  </form>
+  <a class="btn btn-green btn-small home-btn" href="/"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5M5.5 9.5V20h13V9.5"/></svg>Home</a>
+</header>
+
+<main id="main" class="shop-main">
+  <div class="shop-head">
+    <h1>Shop all {{N}} pieces</h1>
+    <p>Newest first, one of each. Every card opens that piece on our Square store, where you check out.</p>
+  </div>
+  <ul class="cards cards-5" id="grid" role="list">
+    {{CARDS}}
+  </ul>
+  <p class="none" id="none" hidden>Nothing in that combination right now. <button type="button" class="linkish" id="reset">Clear the filters</button></p>
+</main>
+
+<footer class="page-foot">
+  <p><a href="/">Home</a><a href="/shipping-returns/">Shipping &amp; returns</a><a href="https://velocity-shop.square.site/?{{UTM}}&amp;utm_content=shop-footer" target="_blank" rel="noopener">Square store<span class="vh"> (opens in a new tab)</span> ↗</a></p>
+  <p>Ships to Canada and the US in 1-2 business days. 30-day returns. Prices in CAD. © {{YEAR}} Velocity Shop</p>
+</footer>
+<script src="/js/site.js" defer></script>
+</body>
+</html>

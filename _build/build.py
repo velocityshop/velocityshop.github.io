@@ -1,5 +1,7 @@
 # Builds the Velocity Shop store from products.json:
 #   index.html                    the store, following a high-converting homepage layout
+#   shop/index.html               every piece in stock, with filters
+#   img/grid.webp                 a 10 x 10 contact sheet of 100 pieces in stock, for About
 #   shipping-returns/index.html   shipping, returns, condition and checkout
 #   sitemap.xml                   lastmod set to today
 # Run after update.py whenever the catalogue changes:  python3 _build/build.py
@@ -12,14 +14,15 @@ SITE = 'https://velocityshop.github.io/'
 STORE = 'https://velocity-shop.square.site/'
 UTM = 'utm_source=velocityshop.github.io&amp;utm_medium=referral&amp;utm_campaign=store'
 
-# Real eBay feedback, shown only when filled in. Never put made-up numbers here.
-EBAY = {'url': '', 'score': '', 'positive': ''}
+# Real eBay feedback and best sellers (_build/ebay.json). Never put made-up numbers or words there.
+EBAY = json.load(open(os.path.join(HERE, 'ebay.json'), encoding='utf-8'))
+CLOTHING = ('tees', 'shirts', 'hoodies', 'outerwear', 'bottoms', 'jerseys')
 
 data = json.load(open(os.path.join(ROOT, 'products.json'), encoding='utf-8'))
 items = data['items']
 N = len(items)
 e = html.escape
-PAGE = 24
+HOME_N = 12
 
 CATS = [  # key, label, short description
     ('tees', 'Tees', 'Tour, band, team and graphic tees.'),
@@ -91,16 +94,53 @@ def pick(words):
     return items[0]
 
 
-# ---------- hero: one standout piece ----------
+# ---------- hero: a deck of standout clothing pieces, dealt one every 2 seconds ----------
 hero = pick(['Ski Patch', 'Polo Bear', 'Lacoste', 'Raptors', 'Polo Ralph Lauren'])
-HERO_IMG = (f'<a class="hero-pic" href="{link(hero["link"], "hero-photo")}" target="_blank" rel="noopener">'
-            f'{img(hero["img"][0], alt_for(hero), lazy=False, priority=True)}'
-            f'<span class="hero-tag">{money(hero["price"])}{" · " + e(hero["size"]) if hero["size"] else ""}</span>{NEW_TAB}</a>')
+deck, seen = [hero], {hero['cat']: 1}
+for it in sorted((x for x in items if x['cat'] in CLOTHING and x is not hero), key=lambda x: -x['price']):
+    if len(deck) == 8: break
+    if seen.get(it['cat'], 0) < 2:
+        deck.append(it); seen[it['cat']] = seen.get(it['cat'], 0) + 1
+BEHIND = ' tabindex="-1" aria-hidden="true"'
+HERO_IMG = '<div class="deck" id="deck" aria-roledescription="carousel" aria-label="Pieces in stock">\n      ' + '\n      '.join(
+    f'<a class="deck-card" style="--p:{i}" href="{link(it["link"], "hero-deck")}" target="_blank" rel="noopener"'
+    f'{BEHIND if i else ""}>'
+    f'{img(it["img"][0], alt_for(it), lazy=(i > 2), priority=(i == 0))}'
+    f'<span class="hero-tag">{money(it["price"])}{" · " + e(it["size"]) if it["size"] else ""}</span>{NEW_TAB}</a>'
+    for i, it in enumerate(deck)) + (
+    '\n      <button type="button" class="deck-pause" id="deck-pause" aria-pressed="false" hidden>Pause</button>\n    </div>')
+
+# ---------- best sellers: most-viewed clothing on eBay (only with real view counts) ----------
+by_id = {it['id']: it for it in items}
+best = [(by_id[b['square_id']], b['views']) for b in sorted(EBAY.get('bestsellers', []), key=lambda b: -b['views'])
+        if b.get('square_id') in by_id and by_id[b['square_id']]['cat'] in CLOTHING][:8]
 
 # ---------- under $40 ----------
 deals = sorted([it for it in items if it['price'] < 40], key=lambda x: (x['price'], x['added']))
 deals_pick = sorted(deals, key=lambda x: x['added'], reverse=True)[:8]
 DEALS = '\n      '.join(card(it, 'under-40', i) for i, it in enumerate(deals_pick))
+if len(best) >= 4:
+    ROW_HTML = f'''<section class="row" id="best-sellers" aria-labelledby="h-best">
+    <div class="sec-head">
+      <h2 id="h-best">Best sellers</h2>
+      <p>The clothing buyers look at most on our eBay store, ranked by views.</p>
+    </div>
+    <ul class="cards cards-row" role="list">
+      {chr(10).join(card(it, 'best-sellers', i) for i, (it, v) in enumerate(best))}
+    </ul>
+  </section>'''
+    ROW_ID, ROW_LABEL = 'best-sellers', 'Best sellers'
+else:
+    ROW_HTML = f'''<section class="row" id="under-40" aria-labelledby="h-deals">
+    <div class="sec-head">
+      <h2 id="h-deals">Under $40</h2>
+      <p>{len(deals)} pieces for less than forty dollars. The newest eight are here.</p>
+    </div>
+    <ul class="cards cards-row" role="list">
+      {DEALS}
+    </ul>
+  </section>'''
+    ROW_ID, ROW_LABEL = 'under-40', 'Under $40'
 
 # ---------- categories ----------
 cat_tiles = []
@@ -108,23 +148,36 @@ for k, l, d in CATS:
     mine = [it for it in items if it['cat'] == k]
     if not mine: continue
     cover = mine[0]
-    cat_tiles.append(f'<li><a class="cat" href="#shop" data-cat="{k}">{img(cover["img"][0], "")}'
+    cat_tiles.append(f'<li><a class="cat" href="/shop/?cat={k}">{img(cover["img"][0], "")}'
                      f'<span class="cat-name">{e(l)}</span><span class="cat-n">{len(mine)} {"piece" if len(mine) == 1 else "pieces"}</span></a></li>')
 CATS_HTML = '\n        '.join(cat_tiles[:8])
 
-# ---------- the whole shop ----------
-CARDS = '\n      '.join(card(it, 'grid', i, hidden=(i >= PAGE), grid=True) for i, it in enumerate(items))
+# ---------- just in (home) and the whole shop (/shop/) ----------
+JUST_IN = '\n      '.join(card(it, 'just-in', i) for i, it in enumerate(items[:HOME_N]))
+CARDS = '\n      '.join(card(it, 'shop', i, grid=True) for i, it in enumerate(items))
 CAT_OPTIONS = ''.join(f'<option value="{k}">{e(l)}</option>' for k, l, _ in CATS if any(it['cat'] == k for it in items))
 
-# ---------- eBay proof (only with real figures) ----------
-if EBAY['url']:
-    EBAY_HTML = f'''<section class="proof" id="reviews" aria-labelledby="h-proof">
-    <h2 id="h-proof">Trusted by buyers on eBay</h2>
-    <p class="proof-fig">{e(EBAY["positive"])} positive feedback · {e(EBAY["score"])} ratings</p>
-    <a class="btn btn-green" href="{e(EBAY["url"])}" target="_blank" rel="noopener">Read our eBay feedback<span class="vh"> (opens eBay)</span> <span aria-hidden="true">↗</span></a>
+# ---------- eBay reviews (written by real buyers, copied word for word) ----------
+reviews = EBAY.get('reviews', [])
+if len(reviews) >= 3:
+    quotes = '\n      '.join(
+        f'<li class="review"><p class="review-badge">Positive feedback</p><blockquote><p>{e(r["text"])}</p></blockquote>'
+        f'<p class="review-by"><b>{e(r["buyer"])}</b>, verified eBay buyer<span class="review-item">Bought: {e(r["item"])}</span></p></li>'
+        for r in reviews)
+    EBAY_HTML = f'''<section class="reviews" id="reviews" aria-labelledby="h-reviews">
+    <div class="sec-head">
+      <h2 id="h-reviews">What eBay buyers say</h2>
+      <p><b>{e(EBAY["positive"])} positive feedback</b> in the last 12 months, with a feedback score of {EBAY["score"]}. These are buyers' own words, unedited.</p>
+    </div>
+    <ul class="review-grid" role="list">
+      {quotes}
+    </ul>
+    <p class="reviews-more"><a class="btn btn-green" href="{e(EBAY["feedback"])}" target="_blank" rel="noopener">Read all our eBay feedback<span class="vh"> (opens eBay)</span> <span aria-hidden="true">↗</span></a></p>
   </section>'''
+    WHY_HTML = ''
 else:
     EBAY_HTML = ''
+    WHY_HTML = None  # keep the Why shop with us section
 
 # ---------- why choose us, how it works, about ----------
 why = pick(['Lacoste Classic', 'Lacoste', 'Polo'])
@@ -140,8 +193,18 @@ STEPS = '\n      '.join(
     f'<li class="step"><a href="{link(it["link"], "how-it-works")}" target="_blank" rel="noopener">{img(it["img"][0], alt_for(it))}{NEW_TAB}</a>'
     f'<h3><span class="step-n" aria-hidden="true">{i + 1}</span> {e(t)}</h3><p>{e(d)}</p></li>'
     for i, (t, d, it) in enumerate(steps))
-about = pick(['Raptors', 'Blue Jays', 'Jersey'])
-ABOUT_IMG = img(about['img'][0], alt_for(about))
+# ---------- about: a 10 x 10 contact sheet of the pieces in stock right now ----------
+from PIL import Image
+k = 10 if N >= 100 else int(N ** 0.5)
+TILE = 120
+sheet = Image.new('RGB', (k * TILE, k * TILE), (242, 246, 255))
+for n, it in enumerate(items[:k * k]):
+    with Image.open(os.path.join(ROOT, it['img'][0])) as im:
+        sheet.paste(im.convert('RGB').resize((TILE, TILE), Image.LANCZOS), ((n % k) * TILE, (n // k) * TILE))
+sheet.save(os.path.join(ROOT, 'img', 'grid.webp'), 'WEBP', quality=78, method=6)
+ABOUT_IMG = (f'<a class="about-grid" href="/shop/">{img("img/grid.webp", f"A {k} by {k} grid of photos of {k * k} pieces in stock right now at Velocity Shop: polos, tees, hoodies, jeans, jerseys and finds.", w=k * TILE, h=k * TILE)}'
+             f'<span class="vh"> Shop all {N} pieces</span></a>')
+GRID_N = k * k
 
 # ---------- FAQ (answers are the shop's real policies) ----------
 FAQ = [
@@ -159,7 +222,7 @@ store_ld = {
     '@type': 'OnlineStore', '@id': SITE + '#store', 'name': 'Velocity Shop', 'alternateName': 'Velocity Shop International',
     'url': SITE, 'logo': SITE + 'img/logo.png', 'image': SITE + 'img/og.jpg',
     'description': 'Online resale shop for one-of-a-kind pre-loved clothing and finds. Every piece is checked by hand, photographed front and back and priced in Canadian dollars. Checkout on Square.',
-    'currenciesAccepted': 'CAD', 'sameAs': [STORE] + ([EBAY['url']] if EBAY['url'] else []),
+    'currenciesAccepted': 'CAD', 'sameAs': [STORE] + ([EBAY['profile']] if EBAY.get('profile') else []),
     'hasMerchantReturnPolicy': {
         '@type': 'MerchantReturnPolicy', '@id': SITE + '#returns', 'applicableCountry': ['CA', 'US'],
         'returnPolicyCategory': 'https://schema.org/MerchantReturnFiniteReturnWindow', 'merchantReturnDays': 30,
@@ -179,7 +242,14 @@ LD_HOME = json.dumps({'@context': 'https://schema.org', '@graph': [
     store_ld,
     {'@type': 'WebSite', '@id': SITE + '#website', 'url': SITE, 'name': 'Velocity Shop', 'inLanguage': 'en-CA', 'publisher': {'@id': SITE + '#store'}},
     {'@type': 'FAQPage', '@id': SITE + '#faq', 'mainEntity': [{'@type': 'Question', 'name': q, 'acceptedAnswer': {'@type': 'Answer', 'text': a}} for q, a in FAQ]},
-    {'@type': 'ItemList', '@id': SITE + '#shop', 'name': 'Everything in stock at Velocity Shop', 'numberOfItems': N, 'itemListElement': products},
+]}, ensure_ascii=False, indent=1).replace('</', '<\\/')
+LD_SHOP = json.dumps({'@context': 'https://schema.org', '@graph': [
+    store_ld,
+    {'@type': 'CollectionPage', 'url': SITE + 'shop/', 'name': 'Shop all | Velocity Shop', 'isPartOf': {'@id': SITE + '#website'},
+     'breadcrumb': {'@type': 'BreadcrumbList', 'itemListElement': [
+         {'@type': 'ListItem', 'position': 1, 'name': 'Velocity Shop', 'item': SITE},
+         {'@type': 'ListItem', 'position': 2, 'name': 'Shop all', 'item': SITE + 'shop/'}]},
+     'mainEntity': {'@type': 'ItemList', '@id': SITE + 'shop/#items', 'name': 'Everything in stock at Velocity Shop', 'numberOfItems': N, 'itemListElement': products}},
 ]}, ensure_ascii=False, indent=1).replace('</', '<\\/')
 LD_POLICY = json.dumps({'@context': 'https://schema.org', '@graph': [
     store_ld,
@@ -193,14 +263,18 @@ LD_POLICY = json.dumps({'@context': 'https://schema.org', '@graph': [
 lowest = min(it['price'] for it in items)
 newest = date.fromisoformat(items[0]['added'])
 values = {
-    '{{HERO_IMG}}': HERO_IMG, '{{DEALS}}': DEALS, '{{N_DEALS}}': str(len(deals)), '{{CATS}}': CATS_HTML,
-    '{{CARDS}}': CARDS, '{{CAT_OPTIONS}}': CAT_OPTIONS, '{{EBAY}}': EBAY_HTML, '{{WHY_IMG}}': WHY_IMG,
+    '{{HERO_IMG}}': HERO_IMG, '{{ROW}}': ROW_HTML, '{{ROW_ID}}': ROW_ID, '{{ROW_LABEL}}': ROW_LABEL, '{{CATS}}': CATS_HTML,
+    '{{JUST_IN}}': JUST_IN, '{{CARDS}}': CARDS, '{{CAT_OPTIONS}}': CAT_OPTIONS, '{{EBAY}}': EBAY_HTML, '{{WHY_IMG}}': WHY_IMG,
+    '{{LD_SHOP}}': LD_SHOP, '{{GRID_N}}': str(GRID_N), '{{HOME_N}}': str(HOME_N),
     '{{STEPS}}': STEPS, '{{ABOUT_IMG}}': ABOUT_IMG, '{{FAQ}}': FAQ_HTML, '{{LD}}': LD_HOME,
     '{{N}}': str(N), '{{FROM}}': money(lowest), '{{UTM}}': UTM, '{{YEAR}}': str(date.today().year),
-    '{{NEWEST}}': f'{newest.strftime("%B")} {newest.day}', '{{MORE}}': str(min(PAGE, N - PAGE)),
+    '{{NEWEST}}': f'{newest.strftime("%B")} {newest.day}',
 }
-for src, dst in (('index.template.html', 'index.html'), ('policy.template.html', 'shipping-returns/index.html')):
+for src, dst in (('index.template.html', 'index.html'), ('shop.template.html', 'shop/index.html'), ('policy.template.html', 'shipping-returns/index.html')):
     page = open(os.path.join(HERE, src), encoding='utf-8').read().replace('{{LD_POLICY}}', LD_POLICY)
+    if WHY_HTML is not None:  # real reviews take the place of the Why section
+        page = re.sub(r'<!-- why -->.*?<!-- /why -->', WHY_HTML, page, flags=re.S)
+    page = page.replace('<!-- why -->', '').replace('<!-- /why -->', '')
     for key, v in values.items():
         page = page.replace(key, v)
     assert '{{' not in page, (src, page[page.index('{{'):page.index('{{') + 30])
@@ -210,4 +284,4 @@ for src, dst in (('index.template.html', 'index.html'), ('policy.template.html',
 sm = os.path.join(ROOT, 'sitemap.xml')
 xml = open(sm, encoding='utf-8').read()
 open(sm, 'w', encoding='utf-8').write(re.sub(r'<lastmod>[^<]*</lastmod>', f'<lastmod>{date.today().isoformat()}</lastmod>', xml))
-print('built', N, 'products;', len(deals), 'under $40; lowest', money(lowest), '; newest', newest)
+print('built', N, 'products;', len(best), 'best sellers;', len(reviews), 'reviews;', len(deals), 'under $40; lowest', money(lowest), '; newest', newest)

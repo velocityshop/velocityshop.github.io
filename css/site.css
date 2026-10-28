@@ -45,7 +45,7 @@ button, select { font: inherit; color: inherit; }
 [hidden] { display: none !important; }
 :focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
 ::selection { background: var(--green); color: var(--ink); }
-.btn, .card a, .hero-pic, .step a, .nav-cart, .cat { position: relative; }
+.btn, .card a, .step a, .nav-cart, .cat, .about-grid { position: relative; }
 .vh { position: absolute !important; left: 0; top: 0; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .skip { position: absolute; left: 12px; top: -60px; z-index: 80; background: var(--green); color: var(--ink); border: var(--line); padding: 10px 16px; font-weight: 700; text-decoration: none; border-radius: 999px; }
 .skip:focus { top: 12px; }
@@ -110,10 +110,20 @@ h2 { font: 900 var(--h2)/1.05 var(--f); letter-spacing: -0.025em; }
 .ticks li::before { content: ""; width: 26px; height: 26px; margin-top: 1px; border: var(--line); border-radius: 50%; background: var(--green) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='m6 12.5 4 4 8-9' fill='none' stroke='%230b0d12' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 16px no-repeat; }
 .hero-cta { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 24px; margin-top: 6px; }
 .hero-link { font-weight: 700; padding-block: 12px; }
-.hero-pic { display: block; border: var(--line); border-radius: var(--r); overflow: hidden; box-shadow: 8px 8px 0 var(--ink); background: var(--tint); }
-.hero-pic img { width: 100%; height: auto; aspect-ratio: 1; object-fit: cover; transition: transform 300ms var(--ease-out); }
+/* The deck: pieces stacked like cards; every 2 seconds the top one is dealt off and goes to the back */
+.deck { position: relative; aspect-ratio: 1; margin: 0 28px 28px 0; }
+.deck-card {
+  --o: min(var(--p), 3);
+  position: absolute; inset: 0; display: block; border: var(--line); border-radius: var(--r); overflow: hidden;
+  background: var(--tint); box-shadow: 6px 6px 0 var(--ink); z-index: calc(20 - var(--p));
+  transform: translate(calc(var(--o) * 9px), calc(var(--o) * 9px)) rotate(calc(var(--o) * 1.6deg));
+  transition: transform 280ms var(--ease-out);
+}
+.deck-card img { width: 100%; height: 100%; object-fit: cover; }
+.deck-card.is-dealt { z-index: 30; transform: translate(-58%, -4%) rotate(-12deg); }
 .hero-tag { position: absolute; left: 16px; bottom: 16px; padding: 8px 14px; border: var(--line); border-radius: 999px; background: var(--sky); font-weight: 900; font-size: 1.125rem; }
-@media (hover: hover) and (pointer: fine) { .hero-pic:hover img { transform: scale(1.02); } }
+.deck-pause { position: absolute; right: -14px; top: -14px; z-index: 40; min-height: 44px; padding: 0 16px; border: var(--line); border-radius: 999px; background: var(--paper); box-shadow: 3px 3px 0 var(--ink); font-weight: 700; font-size: var(--small); cursor: pointer; transition: transform 160ms var(--ease-out), box-shadow 160ms var(--ease-out); }
+.deck-pause:active { transform: translate(3px, 3px); box-shadow: none; }
 
 /* Facts strip, where the logos would go */
 .facts { padding: 18px var(--m); background: var(--sky); border-block: var(--line); }
@@ -170,9 +180,18 @@ h2 { font: 900 var(--h2)/1.05 var(--f); letter-spacing: -0.025em; }
 .linkish { background: none; border: 0; padding: 0; font-weight: 700; text-decoration: underline; cursor: pointer; }
 .more-row { margin-top: 32px; text-align: center; }
 
-/* eBay proof */
-.proof { background: var(--sky); border-block: var(--line); text-align: center; display: grid; gap: 14px; justify-items: center; }
-.proof-fig { font-size: var(--lead); font-weight: 700; }
+/* eBay reviews: buyers' own words */
+.reviews { background: var(--sky); border-block: var(--line); }
+.reviews .sec-head p { color: var(--ink); }
+.review-grid { display: grid; gap: 16px; }
+.review { display: flex; flex-direction: column; gap: 14px; padding: 22px; border: var(--line); border-radius: var(--r); background: var(--paper); box-shadow: var(--hard); }
+.review-badge { align-self: flex-start; padding: 4px 12px; border: var(--line); border-radius: 999px; background: var(--green); font-size: 0.8125rem; font-weight: 700; }
+.review blockquote { margin: 0; font-size: 1.25rem; font-weight: 700; line-height: 1.35; }
+.review blockquote p::before { content: "\201C"; }
+.review blockquote p::after { content: "\201D"; }
+.review-by { margin-top: auto; font-size: var(--small); }
+.review-item { display: block; color: var(--soft); }
+.reviews-more { margin-top: 32px; text-align: center; }
 
 /* Why shop with us */
 .why { display: grid; gap: 32px; align-items: center; border-top: var(--line); }
@@ -233,6 +252,21 @@ details p { padding: 0 18px 18px; color: var(--soft); }
 .policy { padding: 48px var(--m) 88px; }
 .policy > * { max-width: 760px; }
 .crumbs { font-size: var(--small); color: var(--soft); }
+.about-grid { display: block; }
+.about-grid img { image-rendering: auto; }
+@media (hover: hover) and (pointer: fine) { .about-grid img { transition: transform 160ms var(--ease-out), box-shadow 160ms var(--ease-out); } .about-grid:hover img { transform: translate(-2px, -2px); box-shadow: 10px 10px 0 var(--ink); } }
+
+/* Shop all page: sticky header with logo, filters and Home */
+.shop-top { position: sticky; top: 0; z-index: 40; max-width: 1280px; margin-inline: auto; display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 10px 16px; padding: 10px var(--m); background: var(--paper); border-bottom: var(--line); }
+.shop-top .nav-brand img { height: 44px; }
+.home-btn { justify-self: end; gap: 8px; }
+.home-btn svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.shop-top .filters { position: static; grid-column: 1 / -1; grid-row: 2; margin: 0; padding: 0; border: 0; }
+.shop-main { padding: 32px var(--m) 64px; }
+.shop-head { display: grid; gap: 10px; margin-bottom: 28px; }
+.shop-head h1 { font: 900 var(--h2)/1.05 var(--f); letter-spacing: -0.025em; }
+.shop-head p { color: var(--soft); font-size: var(--lead); max-width: 60ch; }
+.cards-5 .card-btn { display: none; }
 .crumbs a { padding-block: 10px; display: inline-block; font-weight: 700; }
 .policy h1 { margin-top: 12px; font: 900 var(--h1)/1 var(--f); letter-spacing: -0.035em; }
 .policy-lead { margin-top: 18px; font-size: var(--lead); color: var(--soft); }
@@ -254,7 +288,7 @@ details p { padding: 0 18px 18px; color: var(--soft); }
 }
 @media (prefers-reduced-motion: reduce) {
   .btn, .card a, .cat, .step a, .nav-cart, .btn:active, .card a:active, .cat:active { transition: none; transform: none !important; }
-  .hero-pic img { transition: none; }
+  .deck-card, .deck-pause { transition: none; }
 }
 
 /* ---------- Tablet ---------- */
@@ -271,6 +305,8 @@ details p { padding: 0 18px 18px; color: var(--soft); }
   .filters { grid-template-columns: repeat(3, 200px) 1fr; }
   .f-count { grid-column: auto; align-self: center; text-align: right; }
   .steps { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .review-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+  .cards-5 .card-btn { display: flex; }
   .faq-list details { box-shadow: 4px 4px 0 var(--ink); }
 }
 
@@ -285,5 +321,20 @@ details p { padding: 0 18px 18px; color: var(--soft); }
   .about { grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr); gap: 64px; }
   .faq { grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr); gap: 56px; align-items: start; }
   .foot { grid-template-columns: 1.4fr 1fr 1fr 1.2fr; }
+  .review-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .cards-5 { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 18px; }
+  .shop-top { grid-template-columns: auto 1fr auto; }
+  .shop-top .filters { grid-column: 2; grid-row: 1; grid-template-columns: repeat(3, minmax(0, 190px)) 1fr; }
+  .shop-top .f-count { grid-column: auto; align-self: end; padding-bottom: 12px; text-align: left; }
   .foot-legal { grid-column: 1 / -1; }
 }
+
+/* The shop page sits on the same white sheet */
+@media (min-width: 1100px) {
+  .shop-top, .shop-main { margin-inline: max(24px, calc((100% - 1280px) / 2)); }
+  .shop-top { border: var(--line); border-radius: var(--r) var(--r) 0 0; }
+  .shop-main { border-inline: var(--line); background: var(--paper); }
+}
+.shop-main { max-width: 1280px; margin-inline: auto; background: var(--paper); }
+.shop-page .page-foot { margin-inline: auto; }
+@media (min-width: 1100px) { .shop-page .page-foot { margin-inline: max(24px, calc((100% - 1280px) / 2)); } }
