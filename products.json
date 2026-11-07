@@ -1,7 +1,77 @@
 {
- "synced": "2026-11-04",
+ "synced": "2026-11-06",
  "store": "https://velocity-shop.square.site/",
  "items": [
+  {
+   "id": "WNZIQYIYE6ZPXRH4Q5KLWFKR",
+   "name": "Alpinestars Stella T-GP Plus R v2 Air Motorcycle Jacket Womens XL Black Pink",
+   "price": 210,
+   "link": "https://velocity-shop.square.site/product/alpinestars-stella-t-gp-plus-r-v2-air-motorcycle-jacket-womens-xl-black-pink/WNZIQYIYE6ZPXRH4Q5KLWFKR",
+   "cat": "outerwear",
+   "size": "XL",
+   "added": "2026-11-06",
+   "img": [
+    "img/p/wnziqyiye6zpxrh4q5klwfkr-0.webp",
+    "img/p/wnziqyiye6zpxrh4q5klwfkr-1.webp"
+   ],
+   "desc": "Alpinestars Stella T-GP Plus R v2 Air women's motorcycle jacket in black with pink and white accents, built with large mesh panels for airflow in warm weather. Shoulder and elbow armor is included, plus a back protector pocket with the Alpinestars Snap On System 2.0, adjustable waist straps and an i"
+  },
+  {
+   "id": "OLYJIGJEQAUJYODAZKUQTOKR",
+   "name": "Polo Ralph Lauren Polo Bear Graphic T-Shirt Mens 3XB Big & Tall Orange NWT",
+   "price": 95,
+   "link": "https://velocity-shop.square.site/product/polo-ralph-lauren-polo-bear-graphic-t-shirt-mens-3xb-big-tall-orange-nwt/OLYJIGJEQAUJYODAZKUQTOKR",
+   "cat": "shirts",
+   "size": "",
+   "added": "2026-11-06",
+   "img": [
+    "img/p/olyjigjeqaujyodazkuqtokr-0.webp",
+    "img/p/olyjigjeqaujyodazkuqtokr-1.webp"
+   ],
+   "desc": "Polo Ralph Lauren short sleeve tee in orange featuring the iconic Polo Bear graphic on the front. Men's Big & Tall size 3XB, new with tags attached. Measures 28 in pit to pit (flat) and 34 in long. • Chest/Bust: 28\" • Length: 34\""
+  },
+  {
+   "id": "NX3GLVKXZUUPQR6X5WKJK6UC",
+   "name": "True Religion Ricky Relaxed Straight Flap Pocket Jeans Mens 32 Rope Stitch USA",
+   "price": 150,
+   "link": "https://velocity-shop.square.site/product/true-religion-ricky-relaxed-straight-flap-pocket-jeans-mens-32-rope-stitch-usa/NX3GLVKXZUUPQR6X5WKJK6UC",
+   "cat": "bottoms",
+   "size": "",
+   "added": "2026-11-06",
+   "img": [
+    "img/p/nx3glvkxzuupqr6x5wkjk6uc-0.webp",
+    "img/p/nx3glvkxzuupqr6x5wkjk6uc-1.webp"
+   ],
+   "desc": "True Religion Ricky Relaxed Straight jeans in a light-medium blue wash with thick tan rope stitching, flap back pockets, a flap coin pocket and a brown leather back patch. Made in USA, men's size 32: measures 32 in at the waist (tagged size) with a 30 in inseam. • Waist: 32\" • Inseam: 30\""
+  },
+  {
+   "id": "IK7PI7Z65XZ7C5XRJHGJPDZW",
+   "name": "Rock Revival Cydnee Boot Cut Jeans Womens 34 Gray Distressed Embroidered Denim",
+   "price": 70,
+   "link": "https://velocity-shop.square.site/product/rock-revival-cydnee-boot-cut-jeans-womens-34-gray-distressed-embroidered-denim/IK7PI7Z65XZ7C5XRJHGJPDZW",
+   "cat": "bottoms",
+   "size": "US 34",
+   "added": "2026-11-06",
+   "img": [
+    "img/p/ik7pi7z65xz7c5xrjhgjpdzw-0.webp",
+    "img/p/ik7pi7z65xz7c5xrjhgjpdzw-1.webp"
+   ],
+   "desc": "Rock Revival Cydnee boot cut jeans in a gray acid wash with fleur-de-lis embroidered back pockets, a leather logo patch and contrast stitching. Women's size 34 with factory distressing and frayed hems as designed. Measures 30 in inseam. • Inseam: 30\""
+  },
+  {
+   "id": "CYKKVWO27QCII6TQ2S3F7U6C",
+   "name": "True Religion Ricky Super T World Tour Jeans Mens 32 Flap Pocket Made in USA",
+   "price": 150,
+   "link": "https://velocity-shop.square.site/product/true-religion-ricky-super-t-world-tour-jeans-mens-32-flap-pocket-made-in-usa/CYKKVWO27QCII6TQ2S3F7U6C",
+   "cat": "bottoms",
+   "size": "",
+   "added": "2026-11-06",
+   "img": [
+    "img/p/cykkvwo27qcii6tq2s3f7u6c-0.webp",
+    "img/p/cykkvwo27qcii6tq2s3f7u6c-1.webp"
+   ],
+   "desc": "True Religion Ricky Super T World Tour jeans in a medium-dark blue wash with thick dark rope stitching, horseshoe-stitched flap back pockets and the World Tour leather patch. US flag patch on the coin pocket, 100% cotton, made in USA. Relaxed straight leg, men's size 32: measures 32 in at the waist "
+  },
   {
    "id": "YEXZLPR4RJE74PHS6XHR75J5",
    "name": "Wrangler Wrancher Dress Jeans Men's 30x30 Heather Grey Bootcut Polyester 82HU",
@@ -1571,20 +1641,6 @@
    "desc": ""
   },
   {
-   "id": "4RPMJY3NHFWV4I4L7TA32R4R",
-   "name": "Harley Davidson Reel Brothers Wisconsin Dells Sleeveless T Shirt Mens L Black",
-   "price": 35,
-   "link": "https://velocity-shop.square.site/product/harley-davidson-reel-brothers-wisconsin-dells-sleeveless-t-shirt-mens-l-black/4RPMJY3NHFWV4I4L7TA32R4R",
-   "cat": "jerseys",
-   "size": "L",
-   "added": "2026-10-14",
-   "img": [
-    "img/p/4rpmjy3nhfwv4i4l7ta32r4r-0.webp",
-    "img/p/4rpmjy3nhfwv4i4l7ta32r4r-1.webp"
-   ],
-   "desc": ""
-  },
-  {
    "id": "27FHHALJPN5L64FCR3UMUY56",
    "name": "Vintage FUBU Sports The Collection T Shirt Mens XXL White Blue Spell Out Y2K",
    "price": 55,
@@ -1652,7 +1708,7 @@
     "img/p/qjhhhk7w43j65nkirzjdiygz-0.webp",
     "img/p/qjhhhk7w43j65nkirzjdiygz-1.webp"
    ],
-   "desc": ""
+   "desc": "Uniqlo UT x Naruto Shippuden crewneck sweatshirt in men's size Small. Tan beige cotton blend sweatshirt with a red embroidered Hidden Leaf Village (Konoha) symbol on the front chest and a large back graphic of Naruto Uzumaki in his Hokage cloak with sketched portraits of Hinata, Kakashi, Sasuke, Sak"
   },
   {
    "id": "LK2CAQJJ74IUAWYO55HFQVFA",
@@ -1946,7 +2002,7 @@
     "img/p/6nv2iyb7tvqtre7773o4ofpc-0.webp",
     "img/p/6nv2iyb7tvqtre7773o4ofpc-1.webp"
    ],
-   "desc": ""
+   "desc": "Vintage 90s Caribbean Soul \"Son of a Son of a Sailor\" art t-shirt. - Double-sided artwork - Large \"Son of a Son of a Sailor\" sailing scene with pirates, captain and tall ship at sunset, signed by the artist - \"Haul in the sheet as we ride on the wind that our forefathers harnessed before us\" script "
   },
   {
    "id": "3C457Q6FUCATO7N3BTL2K6CG",
@@ -2226,9 +2282,9 @@
   },
   {
    "id": "FLV7BMTZJ5HPVHMLT47DOLQZ",
-   "name": "AUTHENTIC BAPE College 2020 Tee XL *Free Ship*",
+   "name": "AUTHENTIC BAPE College 2020 Tee XL",
    "price": 87,
-   "link": "https://velocity-shop.square.site/product/authentic-bape-college-2020-tee-xl-free-ship-/FLV7BMTZJ5HPVHMLT47DOLQZ",
+   "link": "https://velocity-shop.square.site/product/authentic-bape-college-2020-tee-xl/FLV7BMTZJ5HPVHMLT47DOLQZ",
    "cat": "tees",
    "size": "XL",
    "added": "2026-10-01",
@@ -2236,7 +2292,7 @@
     "img/p/flv7bmtzj5hpvhmlt47dolqz-0.webp",
     "img/p/flv7bmtzj5hpvhmlt47dolqz-1.webp"
    ],
-   "desc": "A Bathing Ape BAPE College Logo T-Shirt – Black Ape Head Graphic Tee Japanese Streetwear Iconic BAPE style with the classic College logo graphic. This tee features the signature arched \"A BATHING APE\" lettering wrapped around the famous Ape Head, printed in cream and tan on a black shirt. A staple p"
+   "desc": ""
   },
   {
    "id": "EHH6A3OYXZPOEQCL7Y2VW4GD",
@@ -2291,20 +2347,6 @@
     "img/p/cq562ajtyyqcjkdcbsj7gp4d-0.webp"
    ],
    "desc": ""
-  },
-  {
-   "id": "CJRUNBU2ZTPUDIB5GDJH5RYL",
-   "name": "Nike Socks 6 Pair Size SMALL WMN 4-6 YTH 3Y-5Y *FREE SHIP*",
-   "price": 19,
-   "link": "https://velocity-shop.square.site/product/nike-socks-6-pair-size-small-wmn-4-6-yth-3y-5y-free-ship-/CJRUNBU2ZTPUDIB5GDJH5RYL",
-   "cat": "shoes",
-   "size": "S",
-   "added": "2026-10-01",
-   "img": [
-    "img/p/cjrunbu2ztpudib5gdjh5ryl-0.webp",
-    "img/p/cjrunbu2ztpudib5gdjh5ryl-1.webp"
-   ],
-   "desc": "Step up your workout game with the Nike Everyday Cushion Low (S) Training Socks. Designed for both men and women, these sleek black socks are perfect for any athletic activity. The blend of cotton, polyester, nylon, and spandex fabrics ensures a comfortable fit that moves with your feet. With a low "
   },
   {
    "id": "CICY5LPNBKDJDOBDNACLVNEF",
@@ -2514,9 +2556,9 @@
   },
   {
    "id": "TTNEJ4AZD3F6NFEBA5PAGI4S",
-   "name": "Nike Toronto Raptors Men's Size M Red Hoodie Sweatshirt FREE SHIP",
+   "name": "Nike Toronto Raptors Men's Size M Red Hoodie Sweatshirt",
    "price": 62.25,
-   "link": "https://velocity-shop.square.site/product/nike-toronto-raptors-men-s-size-m-red-hoodie-sweatshirt-free-ship/TTNEJ4AZD3F6NFEBA5PAGI4S",
+   "link": "https://velocity-shop.square.site/product/nike-toronto-raptors-men-s-size-m-red-hoodie-sweatshirt/TTNEJ4AZD3F6NFEBA5PAGI4S",
    "cat": "hoodies",
    "size": "M",
    "added": "2026-09-30",
@@ -2524,7 +2566,7 @@
     "img/p/ttnej4azd3f6nfeba5pagi4s-0.webp",
     "img/p/ttnej4azd3f6nfeba5pagi4s-1.webp"
    ],
-   "desc": ""
+   "desc": "Nike NBA Toronto Raptors Pullover Hoodie – Red Claw Ball Logo Fleece Sweatshirt Size Medium Official Nike NBA Toronto Raptors pullover hoodie in bold team red. The oversized claw-mark basketball logo runs across the chest in black with a perforated dot pattern, paired with a black Nike Swoosh on the"
   },
   {
    "id": "NNQGQEP4CWMKEXFQQGNQV34B",
